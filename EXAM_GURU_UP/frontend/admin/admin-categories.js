@@ -1,4 +1,10 @@
+const API_BASE_URL =
+  window.location.hostname === "localhost"
+    ? "http://localhost:5000"
+    : "https://exam-guru-up.onrender.com";
+
 const api = `${API_BASE_URL}/api/categories` ;
+
 
 /* ================= LOAD CATEGORIES ================= */
 
