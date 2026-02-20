@@ -226,6 +226,15 @@ async function loadSubjects() {
     });
 }
 
+/* ================= LOGOUT ================= */
+
+document.getElementById("logoutBtn")
+.addEventListener("click", ()=>{
+
+    localStorage.clear();
+    window.location.href="../index.html";
+
+});
 /* ===== LOAD PAPERS ===== */
 async function loadPapers() {
 
