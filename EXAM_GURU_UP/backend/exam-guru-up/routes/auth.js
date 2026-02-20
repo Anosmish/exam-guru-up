@@ -28,6 +28,11 @@ const transporter = nodemailer.createTransport({
 
 router.post("/register", async (req, res) => {
     try {
+        console.log("Before sendMail");
+
+await transporter.sendMail({...});
+
+console.log("After sendMail");
 
         const { name, dob, email, password, category, subCategory } = req.body;
 
