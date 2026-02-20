@@ -57,7 +57,7 @@ router.post("/register", async (req, res) => {
             expiresAt: Date.now() + 10 * 60 * 1000 // 10 minutes
         });
 
-        const verifyLink = `${process.env.FRONTEND_URL}/api/auth/verify/${verificationToken}`;
+        const verifyLink = `${process.env.BACKEND_URL}/api/auth/verify/${verificationToken}`;
 
         await transporter.sendMail({
   from: `"Exam Guru UP" <${process.env.EMAIL_USER}>`,
@@ -166,12 +166,12 @@ router.post("/verify/:token", async (req, res) => {
       );
 
       res.send(`
-         <h2>Account Verified Successfully ✅</h2>
-         <button onclick="window.location='${process.env.FRONTEND_URL}/frontend/login-success.html?token=${token}'"
-            style="padding:10px 20px;background:#16a34a;color:white;border:none;border-radius:5px;">
-            Login Now
-         </button>
-      `);
+   <h2>Account Verified Successfully ✅</h2>
+   <button onclick="window.location='${process.env.FRONTEND_URL}/login-success.html?token=${token}'"
+      style="padding:10px 20px;background:#16a34a;color:white;border:none;border-radius:5px;">
+      Login Now
+   </button>
+`);
 
    } catch (err) {
       console.error(err);
