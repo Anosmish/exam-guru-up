@@ -17,19 +17,17 @@ const { verifyToken, isAdmin } = require("../middleware/authMiddleware");
 /* ================= EMAIL CONFIG ================= */
 
 const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
+    host: "smtp-relay.brevo.com",
     port: 587,
     secure: false, // true for 465
     auth: {
-        user: process.env.EMAIL_USER,
+        user: "apikey",
         pass: process.env.EMAIL_PASS
     },
     connectionTimeout: 10000, // 10 sec
     greetingTimeout: 10000,
     socketTimeout: 10000,
-  tls: {
-        family: 4   // 👈 FORCE IPv4
-  }});
+  });
 /* =================================================
    🔹 REGISTER STEP 1 (Save Temp + Send Email)
 ================================================= */
