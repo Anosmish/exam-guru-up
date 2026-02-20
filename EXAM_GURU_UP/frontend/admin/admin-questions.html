@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Question Management</title>
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>Admin Panel</h2>
+    <a href="admin-dashboard.html">🏠 Dashboard</a>
+    <a href="admin-users.html">👤 Users</a>
+    <a href="admin-questions.html">📋 Questions</a>
+    <a href="admin-categories.html">📚 Categories</a>
+    <a href="admin-dashboards.html">🖥 Dashboard Management</a>
+    <a href="#" onclick="adminLogout()">🚪 Logout</a>
+</div>
+
+<div class="main">
+    <h1>Question Management</h1>
+
+    <!-- ADD QUESTION CARD -->
+    <!-- ADD QUESTION CARD -->
+<div class="card">
+    <h3>➕ Add Question</h3>
+
+    <input type="text" id="question" placeholder="Enter Question"><br><br>
+
+    <input type="text" id="A" placeholder="Option A"><br><br>
+    <input type="text" id="B" placeholder="Option B"><br><br>
+    <input type="text" id="C" placeholder="Option C"><br><br>
+    <input type="text" id="D" placeholder="Option D"><br><br>
+
+    <input type="text" id="correct" placeholder="Correct (A/B/C/D)"><br><br>
+
+    <!-- Category -->
+    <select id="categorySelect">
+        <option value="">Select Category</option>
+    </select><br><br>
+
+    <!-- Sub Category -->
+    <select id="subCategorySelect">
+        <option value="">Select Sub Category</option>
+    </select><br><br>
+
+    <!-- Subject -->
+    <select id="subject">
+   <option value="">Select Subject</option>
+</select>
+<br><br>
+
+         <!-- Difficulty -->
+         <select id="difficulty">
+             <option value="Easy">Easy</option>
+             <option value="Medium">Medium</option>
+             <option value="Hard">Hard</option>
+         </select><br><br>
+
+    <button onclick="addQuestion()">Add Question</button>
+</div>
+
+
+    <!-- JSON UPLOAD CARD -->
+    <div class="card">
+        <h3>📂 Upload Questions (JSON)</h3>
+
+        <input type="file" id="jsonFile" accept=".json"><br><br>
+        <button onclick="uploadJSON()">Upload JSON</button>
+    </div>
+
+    <!-- ALL QUESTIONS CARD -->
+    <div class="card">
+        <h3>📋 All Questions</h3>
+        <div id="questionList"></div>
+    </div>
+
+</div>
+
+<script src="admin.js"></script>
+</body>
+</html>

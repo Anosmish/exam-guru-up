@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin - Study Material</title>
+<link rel="stylesheet" href="admin.css">
+
+<style>
+.main { margin-left:220px; padding:30px; }
+form input, form select, form button {
+    display:block; margin:10px 0; padding:10px; width:300px;
+}
+#fileList div {
+    background:#fff; padding:12px; margin:8px 0;
+    border-radius:6px; box-shadow:0 2px 5px rgba(0,0,0,0.1);
+}
+.danger { background:red; color:white; border:none; padding:6px 10px; cursor:pointer; }
+.success { background:green; color:white; border:none; padding:6px 10px; cursor:pointer; }
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+<h2>Admin Panel</h2>
+<a href="admin-dashboard.html">🏠 Dashboard</a>
+<a href="admin-users.html">👤 Users</a>
+<a href="admin-questions.html">📋 Questions</a>
+<a href="admin-categories.html">📚 Categories</a>
+<a href="#" onclick="adminLogout()">🚪 Logout</a>
+</div>
+
+<div class="main">
+
+<h2>📂 Upload Study Material</h2>
+
+<select id="contentType">
+<option value="note">Notes</option>
+<option value="paper">Previous Year Paper</option>
+<option value="project">Project</option>
+</select>
+
+<form id="uploadForm">
+
+<!-- CATEGORY -->
+<select id="categorySelect" required>
+<option value="">Select Category</option>
+</select>
+
+<!-- SUB CATEGORY -->
+<select name="subCategory" id="subCategorySelect" required>
+<option value="">Select SubCategory</option>
+</select>
+
+<!-- SUBJECT -->
+<select name="subject" id="subjectSelect">
+<option value="">Select Subject</option>
+</select>
+
+<input type="number" name="semester" placeholder="Semester">
+<input type="number" name="unit" placeholder="Unit (Only for Notes)">
+
+<select name="type" id="projectTypeSelect" style="display:none;">
+<option value="web">Web Project</option>
+<option value="iot">IoT Project</option>
+<option value="final-year">Final Year Project</option>
+</select>
+
+<input type="text" name="title" placeholder="Title" required>
+<input type="file" name="pdf" accept="application/pdf" required>
+
+<button class="success" type="submit">Upload</button>
+
+</form>
+
+<hr>
+
+<h3>📑 Uploaded Files</h3>
+<div id="fileList"></div>
+
+</div>
+
+<script>
+
+const token = localStorage.getItem("token");
+if(!token){ window.location.href="login.html"; }
+
+const typeSelect = document.getElementById("contentType");
+const categorySelect = document.getElementById("categorySelect");
+const subCategorySelect = document.getElementById("subCategorySelect");
+const subjectSelect = document.getElementById("subjectSelect");
+const projectTypeSelect = document.getElementById("projectTypeSelect");
+const form = document.getElementById("uploadForm");
+const fileList = document.getElementById("fileList");
+
+let categoriesData = [];
+
+/* ================= LOAD CATEGORIES ================= */
+
+async function loadCategories(){
+    const res = await fetch("http://localhost:5000/api/admin/all-categories",{
+        headers:{ Authorization:"Bearer "+token }
+    });
+
+    categoriesData = await res.json();
+
+    categoriesData.forEach(cat=>{
+        categorySelect.innerHTML += `<option value="${cat._id}">${cat.name}</option>`;
+    });
+}
+
+/* ================= LOAD SUBCATEGORIES ================= */
+
+categorySelect.addEventListener("change",()=>{
+    subCategorySelect.innerHTML = `<option value="">Select SubCategory</option>`;
+    subjectSelect.innerHTML = `<option value="">Select Subject</option>`;
+
+    const selected = categoriesData.find(c=>c._id===categorySelect.value);
+    if(!selected) return;
+
+    selected.subCategories.forEach(sub=>{
+        subCategorySelect.innerHTML += `<option value="${sub.name}">${sub.name}</option>`;
+    });
+});
+
+/* ================= LOAD SUBJECTS ================= */
+
+subCategorySelect.addEventListener("change",()=>{
+    subjectSelect.innerHTML = `<option value="">Select Subject</option>`;
+
+    const selected = categoriesData.find(c=>c._id===categorySelect.value);
+    if(!selected) return;
+
+    const sub = selected.subCategories.find(s=>s.name===subCategorySelect.value);
+    if(!sub) return;
+
+    sub.subjects.forEach(subj=>{
+        subjectSelect.innerHTML += `<option value="${subj}">${subj}</option>`;
+    });
+});
+
+/* ================= TOGGLE PROJECT TYPE ================= */
+
+typeSelect.addEventListener("change",()=>{
+    if(typeSelect.value==="project"){
+        projectTypeSelect.style.display="block";
+        subjectSelect.style.display="none";
+    }else{
+        projectTypeSelect.style.display="none";
+        subjectSelect.style.display="block";
+    }
+});
+
+/* ================= UPLOAD ================= */
+
+form.addEventListener("submit", async function(e){
+    e.preventDefault();
+
+    const formData = new FormData(this);
+    formData.append("contentType", typeSelect.value);
+
+    const res = await fetch("http://localhost:5000/api/admin/upload-content",{
+        method:"POST",
+        headers:{ Authorization:"Bearer "+token },
+        body:formData
+    });
+
+    const data = await res.json();
+
+    if(res.ok){
+        alert("Uploaded Successfully ✅");
+        form.reset();
+        loadFiles();
+    }else{
+        alert(data.message || "Upload Failed ❌");
+    }
+});
+
+/* ================= LOAD FILES ================= */
+
+async function loadFiles(){
+
+    const type = typeSelect.value;
+
+    const res = await fetch(`http://localhost:5000/api/admin/list-content?type=${type}`,{
+        headers:{ Authorization:"Bearer "+token }
+    });
+
+    const data = await res.json();
+    fileList.innerHTML="";
+
+    if(data.length===0){
+        fileList.innerHTML="<p>No files uploaded yet.</p>";
+        return;
+    }
+
+    data.forEach(item=>{
+        fileList.innerHTML += `
+        <div>
+            <strong>${item.title}</strong><br>
+            Branch: ${item.subCategory || "-"}<br>
+            <a href="http://localhost:5000${item.pdfUrl}" target="_blank">View PDF</a>
+            <br><br>
+            <button class="danger" onclick="deleteFile('${item._id}','${type}')">Delete</button>
+        </div>`;
+    });
+}
+
+/* ================= DELETE ================= */
+
+async function deleteFile(id,type){
+    if(!confirm("Delete this file?")) return;
+
+    await fetch(`http://localhost:5000/api/admin/delete-content/${id}?type=${type}`,{
+        method:"DELETE",
+        headers:{ Authorization:"Bearer "+token }
+    });
+
+    loadFiles();
+}
+
+/* INITIAL LOAD */
+loadCategories();
+loadFiles();
+
+</script>
+
+</body>
+</html>

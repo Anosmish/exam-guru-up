@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <title>Leaderboard</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .rank1 { background: gold; }
+        .rank2 { background: silver; }
+        .rank3 { background: #cd7f32; }
+    </style>
+</head>
+<body>
+
+<h2>🏆 Leaderboard</h2>
+
+<select id="examTypeFilter">
+    <option value="">All Exam Types</option>
+    <option value="SSC">SSC</option>
+    <option value="UPSC">UPSC</option>
+</select>
+
+<select id="subjectFilter">
+    <option value="">All Subjects</option>
+    <option value="Math">Math</option>
+    <option value="Reasoning">Reasoning</option>
+    <option value="English">English</option>
+    <option value="GK">General Knowledge</option>
+</select>
+
+<button onclick="loadLeaderboard()">Filter</button>
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Rank</th>
+            <th>Name</th>
+            <th>Score</th>
+        </tr>
+    </thead>
+    <tbody id="leaderboardBody">
+    </tbody>
+</table>
+
+<br>
+<a href="dashboards/dashboard.html">
+    <button>Back to Dashboard</button>
+</a>
+
+<script>
+
+const token = localStorage.getItem("token");
+
+if(!token){
+    window.location.href = "login.html";
+}
+
+async function loadLeaderboard(){
+
+    try {
+
+        const examType = document.getElementById("examTypeFilter").value;
+        const subject = document.getElementById("subjectFilter").value;
+
+        let url = `http://localhost:5000/api/score/leaderboard?`;
+
+        if(examType) url += `examType=${examType}&`;
+        if(subject) url += `subject=${subject}`;
+
+        const res = await fetch(url, {
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        });
+
+        const data = await res.json();
+
+        const tbody = document.getElementById("leaderboardBody");
+        tbody.innerHTML = "";
+
+        if(!data.top10){
+            tbody.innerHTML = "<tr><td colspan='3'>No data found</td></tr>";
+            return;
+        }
+
+        data.top10.forEach((item, index) => {
+
+            let rowClass = "";
+            if(index === 0) rowClass = "rank1";
+            if(index === 1) rowClass = "rank2";
+            if(index === 2) rowClass = "rank3";
+
+            tbody.innerHTML += `
+                <tr class="${rowClass}">
+                    <td>${item.rank}</td>
+                    <td>${item.name}</td>
+                    <td>${item.score}</td>
+                </tr>
+            `;
+        });
+
+        // Update Rank Info Section
+        const infoDiv = document.getElementById("rankInfo");
+
+        infoDiv.innerHTML = `
+            <h3>Your Rank: ${data.userRank || "-"}</h3>
+            <p>Total Participants: ${data.totalUsers || 0}</p>
+            <p>You are Above ${data.percentile || 0}% Peoples.</p>
+        `;
+
+    } catch (err) {
+        console.error("Leaderboard Error:", err);
+    }
+}
+
+loadLeaderboard();
+
+</script>
+<div id="rankInfo"></div>
+
+
+
+</body>
+</html>

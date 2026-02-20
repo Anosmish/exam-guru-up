@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin Panel</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>🛠 Admin Control Panel</h1>
+
+<div id="adminPanel">
+<h2>📊 Live Analytics</h2>
+<p>Live Active Users: <span id="liveUsers">0</span></p>
+<h2>📊 Site Statistics</h2>
+<p>Total Registered Users: <span id="totalUsers">0</span></p>
+
+<section>
+<h2>➕ Add Question</h2>
+
+<input type="text" id="question" placeholder="Question">
+<input type="text" id="A" placeholder="Option A">
+<input type="text" id="B" placeholder="Option B">
+<input type="text" id="C" placeholder="Option C">
+<input type="text" id="D" placeholder="Option D">
+<input type="text" id="correct" placeholder="Correct (A/B/C/D)">
+
+<select id="subject">
+<option value="">Select Subject</option>
+<option value="Math">Math</option>
+<option value="Reasoning">Reasoning</option>
+<option value="English">English</option>
+<option value="GK">General Knowledge</option>
+</select>
+
+<select id="examType">
+<option value="">Select Exam Type</option>
+<option value="UPSI">UPSI</option>
+<option value="UPTET">UPTET</option>
+<option value="SSC">SSC</option>
+<option value="Lekhpal">Lekhpal</option>
+</select>
+
+<button onclick="addQuestion()">Add Question</button>
+
+</section>
+
+<hr>
+
+<section>
+<h2>📂 Upload JSON Questions</h2>
+<input type="file" id="jsonFile" accept=".json">
+<button onclick="uploadJSON()">Upload JSON</button>
+</section>
+
+<hr>
+
+<section>
+<h2>📋 Manage Questions</h2>
+<div id="questionList"></div>
+</section>
+
+<hr>
+
+<section>
+<h2>👤 Manage Users</h2>
+<div id="userList"></div>
+</section>
+
+<br>
+<button onclick="adminLogout()">🚪 Logout</button>
+
+</div>
+<script src="http://localhost:5000/socket.io/socket.io.js"></script>
+
+<script src="admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - Manage Categories</title>
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>Admin Panel</h2>
+    <a href="admin-dashboard.html">🏠 Dashboard</a>
+    <a href="admin-users.html">👤 Users</a>
+    <a href="admin-questions.html">📋 Questions</a>
+    <a href="admin-categories.html" class="active">📚 Categories</a>
+    <a href="admin-dashboards.html">🖥 Dashboard Management</a>
+
+    <a href="#" onclick="adminLogout()">🚪 Logout</a>
+</div>
+
+<div class="main">
+    <h1>Category Management</h1>
+
+    <!-- Add Category -->
+    <div class="card">
+    <h3>Add New Category</h3>
+
+    <input type="text" id="newCategory" placeholder="Enter Category Name"><br><br>
+
+    <select id="dashboardSelect">
+        <option value="">Select Dashboard</option>
+    </select><br><br>
+
+    <button onclick="addCategory()">Add Category</button>
+</div>
+
+
+
+    <div class="card">
+    <h3>Add SubCategory</h3>
+
+    <select id="catForSub"></select><br><br>
+
+    <input type="text" id="newSubCategory" placeholder="SubCategory Name"><br><br>
+
+    <button onclick="addSubCategory()">Add SubCategory</button>
+</div>
+<div class="card">
+    <h3>Add Subject</h3>
+
+    <select id="catForSubject"></select><br><br>
+    <select id="subForSubject"></select><br><br>
+
+    <input type="text" id="newSubject" placeholder="Subject Name"><br><br>
+
+    <button onclick="addSubject()">Add Subject</button>
+</div>
+
+
+
+
+    <!-- Category List -->
+    <div class="card">
+        <h3>All Categories</h3>
+        <div id="categoryList"></div>
+    </div>
+</div>
+
+<script src="admin-categories.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Diploma Dashboard</title>
+    <style>
+        body {
+            font-family: Arial;
+            margin: 0;
+            background: #f4f6f9;
+        }
+
+        .header {
+            background: #1e3a8a;
+            color: white;
+            padding: 15px 20px;
+        }
+
+        .header h2 {
+            margin: 0;
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: 0.3s;
+            text-align: center;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .section {
+            margin-top: 30px;
+            display: none;
+        }
+
+        select, button {
+            padding: 10px;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .pdf-list {
+            margin-top: 15px;
+        }
+
+        .pdf-item {
+            background: white;
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        .header-right{
+    display: flexbox;
+    gap:10px;
+    align-items: center;
+}
+
+        a {
+            text-decoration: none;
+            color: #2563eb;
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h2 id="dashboardTitle"><div class="logo">📘 Exam Guru UP</div></h2>
+    <p id="welcomeUser"></p>
+    
+</div>
+<div class="header-right">
+
+
+
+<a href="profile.html">
+<button class="profile-btn">👤 Profile</button>
+</a>
+
+<button class="logout-btn" id="logoutBtn">Logout</button>
+
+</div>
+
+<div class="content">
+
+    <h3>Branch: <span id="userSubCategory"></span></h3>
+
+    <div class="grid">
+
+        <div class="card" onclick="showSection('papers')">
+            📄 Previous Year Papers
+        </div>
+
+        <div class="card" onclick="showSection('notes')">
+            📘 Notes
+        </div>
+
+        <div class="card" onclick="showSection('practicals')">
+            🧪 Practicals
+        </div>
+
+        <div class="card" onclick="showSection('projects')">
+            🚀 Projects
+        </div>
+
+    </div>
+
+    <!-- PAPERS SECTION -->
+    <div id="papers" class="section">
+        <h3>Select Subject</h3>
+        <select id="paperSubject"></select>
+        <button onclick="loadPapers()">Load Papers</button>
+        <div id="paperList" class="pdf-list"></div>
+    </div>
+
+    <!-- NOTES SECTION -->
+    <div id="notes" class="section">
+        <h3>Select Subject</h3>
+        <select id="semesterSelect">
+    <option value="">All Semester</option>
+    <option value="1">Sem 1</option>
+    <option value="2">Sem 2</option>
+    <option value="3">Sem 3</option>
+</select>
+
+        <select id="unitSelect">
+    <option value="">All Units</option>
+    <option value="1">Unit 1</option>
+    <option value="2">Unit 2</option>
+</select>
+        <select id="notesSubject"></select>
+        <button onclick="loadNotes()">Load Notes</button>
+        <div id="notesList" class="pdf-list"></div>
+    </div>
+
+    <!-- PRACTICALS SECTION -->
+    <div id="practicals" class="section">
+        <h3>Select Subject</h3>
+        <select id="practicalSubject"></select>
+        <button onclick="loadPracticals()">Load Practicals</button>
+        <div id="practicalList" class="pdf-list"></div>
+    </div>
+
+    <!-- PROJECTS SECTION -->
+    <div id="projects" class="section">
+        <h3>Select Project Type</h3>
+        <select id="projectType">
+            <option value="web">Web Projects</option>
+            <option value="iot">IoT Projects</option>
+            <option value="final-year">Final Year Projects</option>
+        </select>
+        <button onclick="loadProjects()">Load Projects</button>
+        <div id="projectList" class="pdf-list"></div>
+    </div>
+
+</div>
+
+<script>
+
+const user = JSON.parse(localStorage.getItem("user"));
+const token = localStorage.getItem("token");
+
+if (!user || !token) {
+    window.location.href = "../login.html";
+}
+
+document.getElementById("welcomeUser").innerText =
+    "Welcome, " + user.name;
+
+document.getElementById("userSubCategory").innerText =
+    user.subCategory;
+
+/* ===== SHOW SECTION ===== */
+function showSection(id) {
+
+    document.querySelectorAll(".section")
+        .forEach(sec => sec.style.display = "none");
+
+    document.getElementById(id).style.display = "block";
+
+    loadSubjects();
+}
+
+/* ===== LOAD SUBJECTS ===== */
+async function loadSubjects() {
+
+    const res = await fetch(
+    `http://localhost:5000/api/student/subjects/${user.subCategory}`
+    );
+
+    const subjects = await res.json();
+
+    const selects = [
+        "paperSubject",
+        "notesSubject",
+        "practicalSubject"
+    ];
+
+    selects.forEach(selectId => {
+        const select = document.getElementById(selectId);
+        if (!select) return;
+
+        select.innerHTML = "<option value=''>Select Subject</option>";
+
+        subjects.forEach(sub => {
+            select.innerHTML +=
+                `<option value="${sub}">${sub}</option>`;
+        });
+    });
+}
+
+/* ===== LOAD PAPERS ===== */
+async function loadPapers() {
+
+    const subject = document.getElementById("paperSubject").value;
+
+    const res = await fetch(
+    `http://localhost:5000/api/student/papers?subCategory=${user.subCategory}&subject=${subject}`
+    );
+    const data = await res.json();
+
+    renderList("paperList", data);
+}
+
+/* ===== LOAD NOTES ===== */
+async function loadNotes() {
+
+    const subject = document.getElementById("notesSubject").value;
+    const semester = document.getElementById("semesterSelect").value;
+    const unit = document.getElementById("unitSelect").value;
+
+    const res = await fetch(
+    `http://localhost:5000/api/student/notes?subCategory=${user.subCategory}&subject=${subject}&semester=${semester}&unit=${unit}`
+    );
+
+    const data = await res.json();
+
+    renderList("notesList", data);
+}
+
+/* ===== LOAD PROJECTS ===== */
+async function loadProjects() {
+
+    const type = document.getElementById("projectType").value;
+
+    const res = await fetch(
+    `http://localhost:5000/api/student/projects?subCategory=${user.subCategory}&type=${type}`
+    );
+
+    const data = await res.json();
+
+    renderList("projectList", data);
+}
+
+/* ===== RENDER LIST ===== */
+function renderList(elementId, items) {
+
+    const container = document.getElementById(elementId);
+    container.innerHTML = "";
+
+    if (!items || items.length === 0) {
+        container.innerHTML = "No files available";
+        return;
+    }
+
+    items.forEach(item => {
+        container.innerHTML += `
+            <div class="pdf-item">
+                ${item.title}
+                <br>
+                <a href="http://localhost:5000${item.pdfUrl}" target="_blank">
+                    Download PDF
+                </a>
+            </div>
+        `;
+    });
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Forgot Password</title>
+    <style>
+        body {
+            font-family: Arial;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #f4f6f9;
+        }
+        .box {
+            background: white;
+            padding: 30px;
+            width: 350px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h2 {
+            text-align: center;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .message {
+            margin-top: 10px;
+            text-align: center;
+            font-weight: bold;
+        }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+
+<div class="box">
+    <h2>Forgot Password</h2>
+
+    <input type="email" id="email" placeholder="Enter your email" required>
+    <button onclick="forgotPassword()">Send Reset Link</button>
+
+    <div id="message" class="message"></div>
+</div>
+
+<script>
+async function forgotPassword() {
+
+    const email = document.getElementById("email").value;
+    const messageDiv = document.getElementById("message");
+
+    if (!email) {
+        messageDiv.innerHTML = "Please enter email";
+        messageDiv.className = "message error";
+        return;
+    }
+
+    try {
+        const res = await fetch("http://localhost:5000/api/auth/forgot-password", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email })
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+            messageDiv.innerHTML = data.message;
+            messageDiv.className = "message success";
+        } else {
+            messageDiv.innerHTML = data.message;
+            messageDiv.className = "message error";
+        }
+
+    } catch (error) {
+        messageDiv.innerHTML = "Server error";
+        messageDiv.className = "message error";
+    }
+}
+</script>
+
+</body>
+</html>

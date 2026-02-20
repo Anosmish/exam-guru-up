@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Premium Admin Dashboard</title>
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>⚡ Exam Guru Admin</h2>
+    <a href="admin-dashboard.html">🏠 Dashboard</a>
+    <a href="admin-users.html">👤 Users</a>
+    <a href="admin-questions.html">📋 Questions</a>
+    <a href="admin-categories.html">📚 Categories</a>
+    <a href="admin-dashboards.html">🖥 Dashboard Management</a>
+
+    <a href="#" onclick="adminLogout()">🚪 Logout</a>
+</div>
+
+<div class="main">
+
+    <h1>📊 Analytics Overview</h1>
+
+    <div class="stats-container">
+        <div class="stat-card">
+            <h3>👥 Live Users</h3>
+            <p id="liveUsers">0</p>
+        </div>
+
+        <div class="stat-card">
+            <h3>🧑‍💻 Total Users</h3>
+            <p> <span id="totalUsers">0</span></p>
+        </div>
+
+        <div class="stat-card">
+            <h3>📝 Total Quizzes</h3>
+            <p id="totalQuizzes">120</p>
+        </div>
+    </div>
+
+    <div class="charts-container">
+        <div class="chart-card">
+            <h3>📚 Subject Popularity</h3>
+            <canvas id="subjectChart"></canvas>
+        </div>
+
+        <div class="chart-card">
+            <h3>📊 Difficulty Distribution</h3>
+            <canvas id="difficultyChart"></canvas>
+        </div>
+    </div>
+
+</div>
+
+<script src="http://localhost:5000/socket.io/socket.io.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="admin.js"></script>
+
+</body>
+</html>

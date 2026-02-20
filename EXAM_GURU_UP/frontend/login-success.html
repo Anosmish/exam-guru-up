@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Account Verified</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial;
+    background:linear-gradient(135deg,#1e293b,#0f172a);
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+.container{
+    background:#1e293b;
+    padding:40px;
+    border-radius:12px;
+    text-align:center;
+    width:350px;
+}
+
+button{
+    background:#2563eb;
+    color:white;
+    border:none;
+    padding:10px 20px;
+    border-radius:6px;
+    cursor:pointer;
+    margin-top:15px;
+}
+
+button:hover{
+    background:#1d4ed8;
+}
+</style>
+
+</head>
+<body>
+
+<div class="container">
+    <h2>🎉 Account Verified Successfully</h2>
+    <p>Your account has been activated.</p>
+    <button onclick="continueLogin()">Continue to Dashboard</button>
+</div>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const token = params.get("token");
+
+async function continueLogin(){
+
+    if(!token){
+        window.location.href = "login.html";
+        return;
+    }
+
+    // Save token
+    localStorage.setItem("token", token);
+
+    try {
+
+        // Fetch logged-in user details
+        const res = await fetch("http://localhost:5000/api/auth/me", {
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        });
+
+        const user = await res.json();
+
+        if(user.role === "admin"){
+            window.location.href = "admin/admin-dashboard.html";
+            return;
+        }
+
+        if(user.category && user.category.dashboard){
+            window.location.href = user.category.dashboard.route;
+        }else{
+            alert("Dashboard not assigned to this user.");
+            window.location.href = "login.html";
+        }
+
+    } catch (err){
+        console.log(err);
+        window.location.href = "login.html";
+    }
+}
+</script>
+
+</body>
+</html>
