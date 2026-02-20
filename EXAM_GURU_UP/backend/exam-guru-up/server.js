@@ -1,6 +1,28 @@
+const cors = require("cors");
+
+const allowedOrigins = [
+  "https://examguruup.netlify.app",
+  "http://localhost:5500"
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
+}));
+
+// IMPORTANT: handle preflight
+app.options("*", cors());
+
 const express = require("express");
 const mongoose = require("mongoose");
-const cors = require("cors");
+
 const http = require("http");
 const { Server } = require("socket.io");
 require("dotenv").config();
