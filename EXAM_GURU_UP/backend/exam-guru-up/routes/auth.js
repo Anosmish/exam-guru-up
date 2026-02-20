@@ -28,11 +28,7 @@ const transporter = nodemailer.createTransport({
 
 router.post("/register", async (req, res) => {
     try {
-        console.log("Before sendMail");
-
-await transporter.sendMail({...});
-
-console.log("After sendMail");
+        
 
         const { name, dob, email, password, category, subCategory } = req.body;
 
@@ -63,7 +59,7 @@ console.log("After sendMail");
         });
 
         const verifyLink = `${process.env.BACKEND_URL}/api/auth/verify/${verificationToken}`;
-
+             console.log("Sending email...");
         await transporter.sendMail({
   from: `"Exam Guru UP" <${process.env.EMAIL_USER}>`,
   to: email,
@@ -108,7 +104,7 @@ Exam Guru UP Team
   `
 });
 
-
+console.log("Email sent successfully");
 
         res.json({ message: "Verification email sent. Please check your inbox." });
 
