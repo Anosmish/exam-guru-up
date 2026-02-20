@@ -29,7 +29,7 @@ const transporter = nodemailer.createTransport({
     socketTimeout: 10000,
   tls: {
         family: 4   // 👈 FORCE IPv4
-    });
+  }});
 /* =================================================
    🔹 REGISTER STEP 1 (Save Temp + Send Email)
 ================================================= */
