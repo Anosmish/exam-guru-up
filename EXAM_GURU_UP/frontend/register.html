@@ -53,7 +53,7 @@
     </div>
 
 </div>
-
+<script src="config.js"></script>
 <script>
 let tempData = {};
 let categoriesData = [];
@@ -63,7 +63,7 @@ const subCategorySelect = document.getElementById("subCategory");
 
 /* ================= FETCH CATEGORIES FROM DB ================= */
 
-fetch("http://localhost:5000/api/categories")
+fetch(`${API_BASE_URL}/api/categories`)
     .then(res => res.json())
     .then(data => {
         categoriesData = data;
@@ -145,7 +145,7 @@ async function submitRegister(){
         return;
     }
 
-    const res = await fetch("http://localhost:5000/api/auth/register", {
+    const res = await fetch(`${API_BASE_URL}/api/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

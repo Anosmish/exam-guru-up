@@ -48,7 +48,7 @@ button:hover{
     <p>Your account has been activated.</p>
     <button onclick="continueLogin()">Continue to Dashboard</button>
 </div>
-
+<script src="config.js"></script>
 <script>
 const params = new URLSearchParams(window.location.search);
 const token = params.get("token");
@@ -66,7 +66,7 @@ async function continueLogin(){
     try {
 
         // Fetch logged-in user details
-        const res = await fetch("http://localhost:5000/api/auth/me", {
+        const res = await fetch(`${API_BASE_URL}/api/auth/me`, {
             headers: {
                 "Authorization": "Bearer " + token
             }

@@ -60,7 +60,7 @@
 <a href="dashboards/dashboard.html">
     <button>Back to Dashboard</button>
 </a>
-
+<script src="config.js"></script>
 <script>
 
 const token = localStorage.getItem("token");
@@ -76,7 +76,7 @@ async function loadLeaderboard(){
         const examType = document.getElementById("examTypeFilter").value;
         const subject = document.getElementById("subjectFilter").value;
 
-        let url = `http://localhost:5000/api/score/leaderboard?`;
+        let url = `${API_BASE_URL}/api/score/leaderboard?`;
 
         if(examType) url += `examType=${examType}&`;
         if(subject) url += `subject=${subject}`;

@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // ================= DASHBOARD =================
 
     if (document.getElementById("liveUsers")) {
-        const socket = io("http://localhost:5000");
+        const socket = io(`${API_BASE_URL}`);
 
         socket.on("liveUsers", (count) => {
             document.getElementById("liveUsers").innerText = count;
@@ -72,7 +72,7 @@ async function loadTotalUsers() {
         const token = localStorage.getItem("token");
 
         const res = await fetch(
-            "http://localhost:5000/api/admin/total-users",
+            `${API_BASE_URL}/api/admin/total-users`,
             { headers: { "Authorization": "Bearer " + token }}
         );
 
@@ -97,7 +97,7 @@ async function loadUsers() {
     const token = localStorage.getItem("token");
 
     const res = await fetch(
-        "http://localhost:5000/api/admin/all-users",
+        `${API_BASE_URL}/api/admin/all-users`,
         { headers: { "Authorization": "Bearer " + token } }
     );
 
@@ -121,7 +121,7 @@ async function deleteUser(id) {
     const token = localStorage.getItem("token");
 
     await fetch(
-        `http://localhost:5000/api/admin/delete-user/${id}`,
+        `${API_BASE_URL}/api/admin/delete-user/${id}`,
         { method: "DELETE", headers: { "Authorization": "Bearer " + token } }
     );
 
@@ -137,7 +137,7 @@ async function loadQuestions() {
     const token = localStorage.getItem("token");
 
     const res = await fetch(
-        "http://localhost:5000/api/admin/all-questions",
+        `${API_BASE_URL}/api/admin/all-questions`,
         { headers: { "Authorization":"Bearer " +  token } }
     );
 
@@ -162,7 +162,7 @@ async function deleteQuestion(id) {
     const token = localStorage.getItem("token");
 
     await fetch(
-        `http://localhost:5000/api/admin/delete-question/${id}`,
+        `${API_BASE_URL}/api/admin/delete-question/${id}`,
         { method: "DELETE", headers: { "Authorization": "Bearer " +  token } }
     );
 
@@ -197,7 +197,7 @@ async function addQuestion() {
     }
 
     const res = await fetch(
-        "http://localhost:5000/api/admin/add-question",
+        `${API_BASE_URL}/api/admin/add-question`,
         {
             method: "POST",
             headers: {
@@ -230,7 +230,7 @@ async function addQuestion() {
 
 async function loadCategories() {
 
-    const res = await fetch("http://localhost:5000/api/categories");
+    const res = await fetch(`${API_BASE_URL}/api/categories`);
     const categories = await res.json();
 
     const catSelect = document.getElementById("categorySelect");
@@ -322,7 +322,7 @@ document.addEventListener("change", function (e) {
 async function loadSubjects(categoryId, subCategory){
 
     const res = await fetch(
-        `http://localhost:5000/api/categories/subjects?categoryId=${categoryId}&subCategory=${subCategory}`
+        `${API_BASE_URL}/api/categories/subjects?categoryId=${categoryId}&subCategory=${subCategory}`
     );
 
     const subjects = await res.json();
@@ -371,7 +371,7 @@ async function uploadJSON() {
     formData.append("file", fileInput.files[0]);
 
     const res = await fetch(
-        "http://localhost:5000/api/admin/upload-json",
+        `${API_BASE_URL}/api/admin/upload-json`,
         {
             method: "POST",
             headers: { "Authorization": "Bearer " + token },
@@ -393,7 +393,7 @@ async function loadDashboards() {
     const token = localStorage.getItem("token");
 
     const res = await fetch(
-        "http://localhost:5000/api/dashboard",
+        `${API_BASE_URL}/api/dashboard`,
         { headers: { "Authorization": "Bearer " + token } }
     );
 
@@ -435,7 +435,7 @@ async function createDashboard() {
     }
 
     const res = await fetch(
-        "http://localhost:5000/api/dashboard/add",
+        `${API_BASE_URL}/api/dashboard/add`,
         {
             method: "POST",
             headers: {
@@ -460,7 +460,7 @@ async function deleteDashboard(id) {
     const token = localStorage.getItem("token");
 
     await fetch(
-        `http://localhost:5000/api/dashboard/${id}`,
+        `${API_BASE_URL}/api/dashboard/${id}`,
         {
             method: "DELETE",
             headers: { "Authorization": "Bearer" + token }
@@ -486,7 +486,7 @@ async function updateDashboard(id, name, route, description) {
     const token = localStorage.getItem("token");
 
     await fetch(
-        `http://localhost:5000/api/dashboard/${id}`,
+        `${API_BASE_URL}/api/dashboard/${id}`,
         {
             method: "PUT",
             headers: {

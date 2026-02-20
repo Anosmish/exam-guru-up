@@ -21,12 +21,14 @@ form input, form select, form button {
 <body>
 
 <div class="sidebar">
-<h2>Admin Panel</h2>
-<a href="admin-dashboard.html">🏠 Dashboard</a>
-<a href="admin-users.html">👤 Users</a>
-<a href="admin-questions.html">📋 Questions</a>
-<a href="admin-categories.html">📚 Categories</a>
-<a href="#" onclick="adminLogout()">🚪 Logout</a>
+    <h2>Admin Panel</h2>
+    <a href="admin-dashboard.html">🏠 Dashboard</a>
+    <a href="admin-users.html">👤 Users</a>
+    <a href="admin-questions.html">📋 Questions</a>
+    <a href="admin-categories.html">📚 Categories</a>
+    <a href="admin-dashboards.html">🖥 Dashboard Management</a>
+    <a href="admin-upload.html">  Uploads</a>
+    <a href="#" onclick="adminLogout()">🚪 Logout</a>
 </div>
 
 <div class="main">
@@ -78,7 +80,7 @@ form input, form select, form button {
 <div id="fileList"></div>
 
 </div>
-
+<script src="config.js"></script>
 <script>
 
 const token = localStorage.getItem("token");
@@ -97,7 +99,7 @@ let categoriesData = [];
 /* ================= LOAD CATEGORIES ================= */
 
 async function loadCategories(){
-    const res = await fetch("http://localhost:5000/api/admin/all-categories",{
+    const res = await fetch(`${API_BASE_URL}/api/admin/all-categories`,{
         headers:{ Authorization:"Bearer "+token }
     });
 
@@ -158,7 +160,7 @@ form.addEventListener("submit", async function(e){
     const formData = new FormData(this);
     formData.append("contentType", typeSelect.value);
 
-    const res = await fetch("http://localhost:5000/api/admin/upload-content",{
+    const res = await fetch(`${API_BASE_URL}/api/admin/upload-content`,{
         method:"POST",
         headers:{ Authorization:"Bearer "+token },
         body:formData
@@ -181,7 +183,7 @@ async function loadFiles(){
 
     const type = typeSelect.value;
 
-    const res = await fetch(`http://localhost:5000/api/admin/list-content?type=${type}`,{
+    const res = await fetch(`${API_BASE_URL}/api/admin/list-content?type=${type}`,{
         headers:{ Authorization:"Bearer "+token }
     });
 
@@ -198,7 +200,7 @@ async function loadFiles(){
         <div>
             <strong>${item.title}</strong><br>
             Branch: ${item.subCategory || "-"}<br>
-            <a href="http://localhost:5000${item.pdfUrl}" target="_blank">View PDF</a>
+            <a href="${API_BASE_URL}${item.pdfUrl}" target="_blank">View PDF</a>
             <br><br>
             <button class="danger" onclick="deleteFile('${item._id}','${type}')">Delete</button>
         </div>`;
@@ -210,7 +212,7 @@ async function loadFiles(){
 async function deleteFile(id,type){
     if(!confirm("Delete this file?")) return;
 
-    await fetch(`http://localhost:5000/api/admin/delete-content/${id}?type=${type}`,{
+    await fetch(`${API_BASE_URL}/api/admin/delete-content/${id}?type=${type}`,{
         method:"DELETE",
         headers:{ Authorization:"Bearer "+token }
     });

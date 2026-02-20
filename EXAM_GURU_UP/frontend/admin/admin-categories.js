@@ -1,4 +1,4 @@
-const api = "http://localhost:5000/api/categories";
+const api = `${API_BASE_URL}/api/categories` ;
 
 /* ================= LOAD CATEGORIES ================= */
 
@@ -120,7 +120,7 @@ async function addCategory() {
 
 async function loadDashboards() {
 
-    const res = await fetch("http://localhost:5000/api/dashboard");
+    const res = await fetch(`${API_BASE_URL}/api/dashboard`);
     const dashboards = await res.json();
 
     const select = document.getElementById("dashboardSelect");

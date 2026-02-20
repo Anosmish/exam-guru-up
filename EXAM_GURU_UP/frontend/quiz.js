@@ -29,7 +29,7 @@ async function loadQuiz() {
         const limit = quizType === "daily" ? 10 : 50;
 
         const res = await fetch(
-          `http://localhost:5000/api/quiz/generate?category=${category}&subCategory=${subCategory}&subject=${subject}&difficulty=${difficulty}&limit=${limit}`
+          `${API_BASE_URL}/api/quiz/generate?category=${category}&subCategory=${subCategory}&subject=${subject}&difficulty=${difficulty}&limit=${limit}`
         );
 
         if (!res.ok) {
@@ -55,6 +55,26 @@ async function loadQuiz() {
     }
 }
 
+function goToDashboard(){
+
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if(!user){
+        window.location.href = "../login.html";
+        return;
+    }
+
+    if(user.role === "admin"){
+        window.location.href = "../admin/admin-dashboard.html";
+        return;
+    }
+
+    if(user.category && user.category.dashboard){
+        window.location.href = user.category.dashboard.route;
+    } else {
+        alert("Dashboard not assigned.");
+    }
+}
 
 // ================= TIMER =================
 
@@ -163,7 +183,7 @@ async function finishQuiz() {
    try {
 
       const res = await fetch(
-         "http://localhost:5000/api/score/submit",
+         `${API_BASE_URL}/api/score/submit`,
          {
             method: "POST",
             headers: {

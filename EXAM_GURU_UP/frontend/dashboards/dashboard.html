@@ -198,7 +198,7 @@ async function loadUser(){
     try{
 
         const res = await fetch(
-            "http://localhost:5000/api/user/profile",
+            `${API_BASE_URL}/api/user/profile`,
             {
                 headers:{ Authorization: "Bearer " + token }
             }
@@ -282,7 +282,7 @@ async function loadLatestScore(){
     try{
 
         const res = await fetch(
-        "http://localhost:5000/api/score/latest",
+        `${API_BASE_URL}/api/score/latest`,
         {
             headers:{ Authorization: "Bearer " + token }
         });
@@ -330,7 +330,7 @@ async function loadSubjects(){
     try{
 
         const res = await fetch(
-            `http://localhost:5000/api/quiz/subjects?category=${currentUser.category._id}&subCategory=${currentUser.subCategory}`
+            `${API_BASE_URL}/api/quiz/subjects?category=${currentUser.category._id}&subCategory=${currentUser.subCategory}`
         );
 
         const subjects = await res.json();
