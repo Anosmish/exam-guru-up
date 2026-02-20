@@ -21,7 +21,7 @@ const transporter = nodemailer.createTransport({
     port: 587,
     secure: false, // true for 465
     auth: {
-        user: "apikey",
+        user: "examguruup@gmail.com",
         pass: process.env.EMAIL_PASS
     },
     connectionTimeout: 10000, // 10 sec
