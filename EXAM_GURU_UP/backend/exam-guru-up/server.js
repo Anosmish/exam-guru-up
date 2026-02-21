@@ -15,7 +15,8 @@ const server = http.createServer(app);
 
 const allowedOrigins = [
   "https://examguruup.netlify.app",
-  "http://localhost:5500"
+  "http://localhost:5500",
+  "https://exam-guru-up.onrender.com"
 ];
 
 app.use(cors({
