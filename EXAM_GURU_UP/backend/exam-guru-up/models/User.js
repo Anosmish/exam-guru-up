@@ -6,7 +6,7 @@ const userSchema = new mongoose.Schema({
     password: String,
     category: {
         type: mongoose.Schema.Types.ObjectId,
-        ref:  "categories"
+        ref:  "Category"
     },
     subCategory: {
         type: String
