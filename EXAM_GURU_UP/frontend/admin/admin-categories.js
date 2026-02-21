@@ -50,7 +50,7 @@ async function loadCategories() {
                     </small>
                 </h3>
 
-                <button onclick="deleteCategory('${cat._id}')">
+                <button class="deleteCategoryBtn" data-id="${cat._id}">
                     Delete
                 </button>
 
@@ -58,7 +58,9 @@ async function loadCategories() {
                     ${(cat.subCategories || []).map(sub => `
                         <li>
                             <strong>${sub.name}</strong>
-                            <button onclick="deleteSub('${cat._id}','${sub.name}')">
+                            <button class="deleteSubBtn"
+        data-category="${cat._id}"
+        data-sub="${sub.name}">
                                 X
                             </button>
                             <br>
@@ -68,11 +70,10 @@ async function loadCategories() {
                                     ? sub.subjects.map(subject => `
                                         <li>
                                             ${subject}
-                                            <button onclick="deleteSubject(
-                                                '${cat._id}',
-                                                '${sub.name}',
-                                                '${subject}'
-                                            )">
+                                            <button class="deleteSubjectBtn"
+        data-category="${cat._id}"
+        data-sub="${sub.name}"
+        data-subject="${subject}">
                                                 X
                                             </button>
                                         </li>
@@ -232,6 +233,51 @@ document.getElementById("catForSubject").addEventListener("change", function () 
         });
     }
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    // Logout
+    document.getElementById("logoutBtn")
+        .addEventListener("click", adminLogout);
+
+    // Add Category
+    document.getElementById("addCategoryBtn")
+        .addEventListener("click", addCategory);
+
+    // Add SubCategory
+    document.getElementById("addSubCategoryBtn")
+        .addEventListener("click", addSubCategory);
+
+    // Add Subject
+    document.getElementById("addSubjectBtn")
+        .addEventListener("click", addSubject);
+
+    // ================= EVENT DELEGATION FOR DELETE =================
+    document.getElementById("categoryList")
+        .addEventListener("click", async (e) => {
+
+        if (e.target.classList.contains("deleteCategoryBtn")) {
+            const id = e.target.dataset.id;
+            await deleteCategory(id);
+        }
+
+        if (e.target.classList.contains("deleteSubBtn")) {
+            const categoryId = e.target.dataset.category;
+            const sub = e.target.dataset.sub;
+            await deleteSub(categoryId, sub);
+        }
+
+        if (e.target.classList.contains("deleteSubjectBtn")) {
+            const categoryId = e.target.dataset.category;
+            const sub = e.target.dataset.sub;
+            const subject = e.target.dataset.subject;
+            await deleteSubject(categoryId, sub, subject);
+        }
+
+    });
+
+});
+
 loadDashboards();
 
 loadCategories();

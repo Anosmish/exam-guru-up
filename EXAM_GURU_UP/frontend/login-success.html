@@ -40,58 +40,17 @@ button:hover{
 }
 </style>
 
+<script src="config.js" defer></script>
+<script src="logsuc.js" defer></script>
+
+
 </head>
 <body>
 
 <div class="container">
     <h2>🎉 Account Verified Successfully</h2>
     <p>Your account has been activated.</p>
-    <button onclick="continueLogin()">Continue to Dashboard</button>
-</div>
-<script src="config.js"></script>
-<script>
-const params = new URLSearchParams(window.location.search);
-const token = params.get("token");
-
-async function continueLogin(){
-
-    if(!token){
-        window.location.href = "login.html";
-        return;
-    }
-
-    // Save token
-    localStorage.setItem("token", token);
-
-    try {
-
-        // Fetch logged-in user details
-        const res = await fetch(`${API_BASE_URL}/api/auth/me`, {
-            headers: {
-                "Authorization": "Bearer " + token
-            }
-        });
-
-        const user = await res.json();
-
-        if(user.role === "admin"){
-            window.location.href = "admin/admin-dashboard.html";
-            return;
-        }
-
-        if(user.category && user.category.dashboard){
-            window.location.href = user.category.dashboard.route;
-        }else{
-            alert("Dashboard not assigned to this user.");
-            window.location.href = "login.html";
-        }
-
-    } catch (err){
-        console.log(err);
-        window.location.href = "login.html";
-    }
-}
-</script>
+<button id="continueBtn">Continue to Dashboard</button></div>
 
 </body>
 </html>

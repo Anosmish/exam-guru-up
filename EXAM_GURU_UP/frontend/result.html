@@ -19,6 +19,10 @@
             font-weight: bold;
         }
     </style>
+
+    <script src="config.js" defer></script>
+<script src="result.js" defer></script>
+
 </head>
 <body>
 
@@ -36,134 +40,7 @@
 <button onclick="goToDashboard()">
     ← Back to Dashboard
 </button>
-<script src="config.js"></script>
-<script>
-function goToDashboard(){
 
-    const user = JSON.parse(localStorage.getItem("user"));
-
-    if(!user){
-        window.location.href = "../login.html";
-        return;
-    }
-
-    if(user.role === "admin"){
-        window.location.href = "../admin/admin-dashboard.html";
-        return;
-    }
-
-    if(user.category && user.category.dashboard){
-        window.location.href = user.category.dashboard.route;
-    } else {
-        alert("Dashboard not assigned.");
-    }
-}
-const data = JSON.parse(localStorage.getItem("resultData"));
-
-if (!data || !data.answers) {
-    document.body.innerHTML = "<h3>No result data found</h3>";
-    throw new Error("No result data");
-}
-
-// ✅ Calculate max possible score based on difficulty
-let maxScore = 0;
-
-data.answers.forEach(item => {
-
-    if (item.difficulty === "Hard") {
-        maxScore += 3;
-    }
-    else if (item.difficulty === "Medium") {
-        maxScore += 2;
-    }
-    else {
-        maxScore += 1;
-    }
-
-});
-
-// fallback if difficulty missing
-if (maxScore === 0) {
-    maxScore = data.total;
-}
-
-// ✅ Correct percentage calculation
-let percent = ((data.score / maxScore) * 100).toFixed(2);
-
-// ✅ Show score
-document.getElementById("score").innerText =
-    `Score: ${data.score} / ${maxScore}`;
-
-document.getElementById("percentage").innerText =
-    `Percentage: ${percent}%`;
-
-
-// 🎯 Performance Message
-let performanceMsg = "";
-
-if (percent >= 80) {
-    performanceMsg = "🌟 Excellent Performance!";
-}
-else if (percent >= 50) {
-    performanceMsg = "👍 Good Job!";
-}
-else {
-    performanceMsg = "⚠️ Needs Improvement. Keep Practicing!";
-}
-
-document.getElementById("performance").innerText = performanceMsg;
-
-
-// ✅ Detailed Analysis
-const analysisDiv = document.getElementById("analysis");
-
-analysisDiv.innerHTML = "";
-
-data.answers.forEach((item, index) => {
-
-    const isCorrect = item.selectedAnswer === item.correctAnswer;
-
-    let optionsHTML = "";
-
-    for (let key in item.options) {
-
-        let className = "";
-
-        if (key === item.correctAnswer) {
-            className = "correct";
-        }
-
-        if (key === item.selectedAnswer && !isCorrect) {
-            className = "wrong";
-        }
-
-        optionsHTML += `
-            <p class="${className}">
-                ${key}. ${item.options[key]}
-            </p>
-        `;
-    }
-
-    analysisDiv.innerHTML += `
-        <div class="box">
-            <p><strong>Q${index + 1}:</strong> ${item.question}</p>
-            ${optionsHTML}
-            <p>
-                <strong>Your Answer:</strong> 
-                <span class="${isCorrect ? 'correct' : 'wrong'}">
-                    ${item.selectedAnswer}
-                </span>
-            </p>
-            <p>
-                <strong>Correct Answer:</strong> 
-                ${item.correctAnswer}
-            </p>
-        </div>
-    `;
-
-});
-
-</script>
 
 
 

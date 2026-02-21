@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <title>Admin - Manage Categories</title>
     <link rel="stylesheet" href="admin.css">
+    <script src="../config.js" defer></script>
+
+<script src="admin-categories.js" defer></script>
+
 </head>
 <body>
 
@@ -15,7 +19,7 @@
     <a href="admin-categories.html">📚 Categories</a>
     <a href="admin-dashboards.html">🖥 Dashboard Management</a>
     <a href="admin-upload.html">  Uploads</a>
-    <a href="#" onclick="adminLogout()">🚪 Logout</a>
+    <a href="#" id="logoutBtn">🚪 Logout</a>
 </div>
 
 <div class="main">
@@ -31,7 +35,7 @@
         <option value="">Select Dashboard</option>
     </select><br><br>
 
-    <button onclick="addCategory()">Add Category</button>
+    <button id="addCategoryBtn">Add Category</button>
 </div>
 
 
@@ -43,7 +47,7 @@
 
     <input type="text" id="newSubCategory" placeholder="SubCategory Name"><br><br>
 
-    <button onclick="addSubCategory()">Add SubCategory</button>
+    <button id="addSubCategoryBtn">Add SubCategory</button>
 </div>
 <div class="card">
     <h3>Add Subject</h3>
@@ -53,7 +57,7 @@
 
     <input type="text" id="newSubject" placeholder="Subject Name"><br><br>
 
-    <button onclick="addSubject()">Add Subject</button>
+    <button id="addSubjectBtn">Add Subject</button>
 </div>
 
 
@@ -65,9 +69,6 @@
         <div id="categoryList"></div>
     </div>
 </div>
-<script src="../config.js"></script>
-
-<script src="admin-categories.js"></script>
 
 </body>
 </html>

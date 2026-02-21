@@ -45,53 +45,20 @@
         .success { color: green; }
         .error { color: red; }
     </style>
+    <script src="config.js" defer></script>
+<script src="forgot.js" defer></script>
+
 </head>
 <body>
-
+<main>
 <div class="box">
     <h2>Forgot Password</h2>
 
     <input type="email" id="email" placeholder="Enter your email" required>
-    <button onclick="forgotPassword()">Send Reset Link</button>
+    <button id="forgotBtn">Send Reset Link</button>
 
     <div id="message" class="message"></div>
 </div>
-<script src="config.js"></script>
-<script>
-async function forgotPassword() {
-
-    const email = document.getElementById("email").value;
-    const messageDiv = document.getElementById("message");
-
-    if (!email) {
-        messageDiv.innerHTML = "Please enter email";
-        messageDiv.className = "message error";
-        return;
-    }
-
-    try {
-        const res = await fetch(`${API_BASE_URL}/api/auth/forgot-password`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email })
-        });
-
-        const data = await res.json();
-
-        if (res.ok) {
-            messageDiv.innerHTML = data.message;
-            messageDiv.className = "message success";
-        } else {
-            messageDiv.innerHTML = data.message;
-            messageDiv.className = "message error";
-        }
-
-    } catch (error) {
-        messageDiv.innerHTML = "Server error";
-        messageDiv.className = "message error";
-    }
-}
-</script>
-
+</main>
 </body>
 </html>

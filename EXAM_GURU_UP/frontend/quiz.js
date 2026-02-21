@@ -208,7 +208,15 @@ async function finishQuiz() {
    }
 }
 
+// Attach option click events after DOM loads
+document.addEventListener("DOMContentLoaded", function(){
 
+    document.getElementById("A").addEventListener("click", () => checkAnswer("A"));
+    document.getElementById("B").addEventListener("click", () => checkAnswer("B"));
+    document.getElementById("C").addEventListener("click", () => checkAnswer("C"));
+    document.getElementById("D").addEventListener("click", () => checkAnswer("D"));
+
+});
 // ================= START =================
 
 loadQuiz();
