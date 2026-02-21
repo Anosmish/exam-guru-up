@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const axios = require("axios");
-
+const Category = require("../models/Category"); // ✅ जरुरी
 const User = require("../models/User");
 const Dashboard = require("../models/Dashboard");
 const TempUser = require("../models/TempUser");
