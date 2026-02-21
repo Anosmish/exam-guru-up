@@ -268,7 +268,7 @@ router.post("/login", async (req, res) => {
 
         const user = await User.findOne({ email })
             .populate({
-                path: "categories",
+                path: "category",
                 model: "Category",
            
                 populate: {
