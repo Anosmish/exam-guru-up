@@ -269,19 +269,17 @@ router.post("/login", async (req, res) => {
         const user = await User.findOne({ email })
             .populate({
                 path: "category",
+                model: "Category",
                 populate: {
-                    path: "dashboard"
+                    path: "dashboard",
+                    model: "Dashboard"
                 }
             });
 
-        if (!user) {
-            return res.status(400).json({ message: "Invalid credentials" });
-        }
+        if (!user) return res.status(400).json({ message: "Invalid credentials" });
 
         const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-            return res.status(400).json({ message: "Invalid credentials" });
-        }
+        if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
 
         const token = jwt.sign(
             { id: user._id, role: user.role },
@@ -292,11 +290,10 @@ router.post("/login", async (req, res) => {
         res.json({ token, user });
 
     } catch (err) {
-        console.log(err);
-        res.status(500).json({ message: "Login failed" });
+        console.error("Login Error:", err); // <-- exact error console
+        res.status(500).json({ message: "Login failed", error: err.message });
     }
 });
-
 /* ================= GET LOGGED IN USER ================= */
 
 router.get("/me", verifyToken, async (req, res) => {
