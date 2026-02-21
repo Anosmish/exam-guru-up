@@ -152,6 +152,9 @@ header {
     gap: 20px;
     padding: 40px;
 }
+.mobile-menu{
+    z-index:9999;
+}
 
 .dash-card {
     background: white;
