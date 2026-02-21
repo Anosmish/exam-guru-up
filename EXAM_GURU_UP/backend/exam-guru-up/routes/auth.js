@@ -5,6 +5,7 @@ const crypto = require("crypto");
 const axios = require("axios");
 
 const User = require("../models/User");
+const Dashboard = require("../models/Dashboard");
 const TempUser = require("../models/TempUser");
 
 const router = express.Router();
