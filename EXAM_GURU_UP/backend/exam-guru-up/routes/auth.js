@@ -302,6 +302,7 @@ router.get("/me", verifyToken, async (req, res) => {
         const user = await User.findById(req.user.id)
             .populate({
                 path: "category",
+                model: "Category",
                 populate: {
                     path: "dashboard"
                 }
