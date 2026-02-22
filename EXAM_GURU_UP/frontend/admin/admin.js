@@ -395,55 +395,33 @@ async function uploadJSON() {
     }
 }
 
+document.addEventListener("DOMContentLoaded", init);
 
-async function loadDashboards() {
+function init() {
 
-    const token = localStorage.getItem("token");
-
-    const res = await fetch(
-        `${API_BASE_URL}/api/dashboard`,
-        { headers: { "Authorization": "Bearer " + token } }
-    );
-
-    const data = await res.json();
-
-    const container = document.getElementById("dashboardList");
-
-    if (!container) return;
-
-    container.innerHTML = "";
-
-    data.forEach(d => {
-        container.innerHTML += `
-            <div style="margin-bottom:10px;">
-                <b>${d.name}</b> 
-                (${d.route})
-                <br>
-                ${d.description || ""}
-                <br>
-                <button onclick="editDashboard('${d._id}', '${d.name}', '${d.route}', '${d.description || ""}')">Edit</button>
-                <button onclick="deleteDashboard('${d._id}')">Delete</button>
-                <hr>
-            </div>
-        `;
-    });
+    bindCreateDashboard();
+    bindDashboardActions();
+    loadDashboards();
 }
 
-document.addEventListener("DOMContentLoaded", function () {
+/* ============================= */
+/* CREATE DASHBOARD */
+/* ============================= */
 
-    const createBtn = document.getElementById("createDashboardBtn");
-
-    createBtn.addEventListener("click", createDashboard);
-
-});
+function bindCreateDashboard() {
+    const btn = document.getElementById("createDashboardBtn");
+    if (btn) {
+        btn.addEventListener("click", createDashboard);
+    }
+}
 
 async function createDashboard() {
 
     const token = localStorage.getItem("token");
 
-    const name = document.getElementById("dashName").value;
-    const route = document.getElementById("dashRoute").value;
-    const description = document.getElementById("dashDesc").value;
+    const name = document.getElementById("dashName").value.trim();
+    const route = document.getElementById("dashRoute").value.trim();
+    const description = document.getElementById("dashDesc").value.trim();
 
     if (!name || !route) {
         alert("Name and Route required");
@@ -454,34 +432,121 @@ async function createDashboard() {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            "Authorization": "Bearer " + token   // <-- space important hai
+            "Authorization": "Bearer " + token
         },
         body: JSON.stringify({ name, route, description })
     });
 
     if (res.ok) {
         alert("Dashboard Created ✅");
+        clearForm();
         loadDashboards();
     } else {
         alert("Error creating dashboard ❌");
     }
 }
 
+function clearForm() {
+    document.getElementById("dashName").value = "";
+    document.getElementById("dashRoute").value = "";
+    document.getElementById("dashDesc").value = "";
+}
 
-async function deleteDashboard(id) {
+/* ============================= */
+/* LOAD DASHBOARDS */
+/* ============================= */
+
+async function loadDashboards() {
 
     const token = localStorage.getItem("token");
 
-    await fetch(
-        `${API_BASE_URL}/api/dashboard/${id}`,
-        {
-            method: "DELETE",
-            headers: { "Authorization": "Bearer" + token }
+    const container = document.getElementById("dashboardList");
+    if (!container) return;
+
+    const res = await fetch(`${API_BASE_URL}/api/dashboard`, {
+        headers: { "Authorization": "Bearer " + token }
+    });
+
+    const data = await res.json();
+
+    container.innerHTML = "";
+
+    data.forEach(d => {
+        container.innerHTML += `
+            <div class="dashboard-item" style="margin-bottom:10px;">
+                <b>${d.name}</b> (${d.route})
+                <br>
+                <span class="desc">${d.description || ""}</span>
+                <br>
+                <button class="editBtn" 
+                        data-id="${d._id}"
+                        data-name="${d.name}"
+                        data-route="${d.route}"
+                        data-desc="${d.description || ""}">
+                        Edit
+                </button>
+
+                <button class="deleteBtn" data-id="${d._id}">
+                        Delete
+                </button>
+                <hr>
+            </div>
+        `;
+    });
+}
+
+/* ============================= */
+/* EDIT & DELETE (Event Delegation) */
+/* ============================= */
+
+function bindDashboardActions() {
+
+    const container = document.getElementById("dashboardList");
+    if (!container) return;
+
+    container.addEventListener("click", function (e) {
+
+        if (e.target.classList.contains("deleteBtn")) {
+            const id = e.target.dataset.id;
+            deleteDashboard(id);
         }
-    );
+
+        if (e.target.classList.contains("editBtn")) {
+            const id = e.target.dataset.id;
+            const name = e.target.dataset.name;
+            const route = e.target.dataset.route;
+            const desc = e.target.dataset.desc;
+
+            editDashboard(id, name, route, desc);
+        }
+
+    });
+}
+
+/* ============================= */
+/* DELETE */
+/* ============================= */
+
+async function deleteDashboard(id) {
+
+    if (!confirm("Are you sure you want to delete this dashboard?"))
+        return;
+
+    const token = localStorage.getItem("token");
+
+    await fetch(`${API_BASE_URL}/api/dashboard/${id}`, {
+        method: "DELETE",
+        headers: {
+            "Authorization": "Bearer " + token
+        }
+    });
 
     loadDashboards();
 }
+
+/* ============================= */
+/* EDIT */
+/* ============================= */
 
 function editDashboard(id, name, route, description) {
 
@@ -498,22 +563,18 @@ async function updateDashboard(id, name, route, description) {
 
     const token = localStorage.getItem("token");
 
-    await fetch(
-        `${API_BASE_URL}/api/dashboard/${id}`,
-        {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": token
-            },
-            body: JSON.stringify({ name, route, description })
-        }
-    );
+    await fetch(`${API_BASE_URL}/api/dashboard/${id}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + token
+        },
+        body: JSON.stringify({ name, route, description })
+    });
 
     alert("Dashboard Updated ✅");
     loadDashboards();
 }
-
 
 /* ======================================================
    CHARTS
