@@ -2,22 +2,22 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
 <url>
-  <loc>https://examguruup.netlify.app//</loc>
+  <loc>https://prepzenith.netlify.app//</loc>
   <priority>1.0</priority>
 </url>
 
 <url>
-  <loc>https://examguruup.netlify.app//login.html</loc>
+  <loc>https://prepzenith.netlify.app//login.html</loc>
   <priority>0.8</priority>
 </url>
 
 <url>
-  <loc>https://examguruup.netlify.app//register.html</loc>
+  <loc>https://prepzenith.netlify.app//register.html</loc>
   <priority>0.8</priority>
 </url>
 
 <url>
-  <loc>https://examguruup.netlify.app//leaderboard.html</loc>
+  <loc>https://prepzenith.netlify.app//leaderboard.html</loc>
   <priority>0.7</priority>
 </url>
 

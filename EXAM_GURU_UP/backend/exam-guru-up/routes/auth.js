@@ -19,7 +19,7 @@ const sendBrevoEmail = async (to, subject, htmlContent, textContent = "") => {
             "https://api.brevo.com/v3/smtp/email",
             {
                 sender: {
-                    name: "Exam Guru UP",
+                    name: "PrepZenith",
                     email: process.env.EMAIL_USER
                 },
                 to: [{ email: to }],
@@ -81,9 +81,9 @@ router.post("/register", async (req, res) => {
         const htmlContent = `
             <div style="font-family:Arial;background:#f4f6f9;padding:30px;">
                 <div style="max-width:500px;margin:auto;background:#ffffff;padding:25px;border-radius:8px;">
-                    <h2 style="color:#1e3a8a;margin-top:0;">Exam Guru UP</h2>
+                    <h2 style="color:#1e3a8a;margin-top:0;">PrepZenith</h2>
                     <p>Hello <b>${name}</b>,</p>
-                    <p>Thank you for registering at Exam Guru UP.</p>
+                    <p>Thank you for registering at PrepZenith.</p>
                     <p>Please verify your email address to activate your account.</p>
                     <p style="text-align:center;margin:30px 0;">
                         <a href="${verifyLink}" style="background:#2563eb;color:white;padding:12px 25px;border-radius:5px;text-decoration:none;font-weight:bold;display:inline-block;">
@@ -95,7 +95,7 @@ router.post("/register", async (req, res) => {
                     </p>
                     <hr style="border:none;border-top:1px solid #e5e7eb;margin:20px 0;">
                     <p style="font-size:11px;color:#999;text-align:center;margin:0;">
-                        © ${new Date().getFullYear()} Exam Guru UP. All rights reserved.
+                        © ${new Date().getFullYear()} PrepZenith. All rights reserved.
                     </p>
                 </div>
             </div>
@@ -104,7 +104,7 @@ router.post("/register", async (req, res) => {
         const textContent = `
 Hello ${name},
 
-Thank you for registering at Exam Guru UP.
+Thank you for registering at PrepZenith.
 
 To activate your account, please verify your email by clicking the link below:
 
@@ -113,10 +113,10 @@ ${verifyLink}
 If you did not create this account, please ignore this message.
 
 Regards,
-Exam Guru UP Team
+PrepZenith Team
         `;
 
-        await sendBrevoEmail(email, "Verify your Exam Guru UP account", htmlContent, textContent);
+        await sendBrevoEmail(email, "Verify your PrepZenith account", htmlContent, textContent);
 
         console.log("Email sent successfully via Brevo");
         res.json({ message: "Verification email sent. Please check your inbox." });
@@ -152,9 +152,9 @@ router.post("/resend-verification", async (req, res) => {
         const htmlContent = `
             <div style="font-family:Arial;background:#f4f6f9;padding:30px;">
                 <div style="max-width:500px;margin:auto;background:#ffffff;padding:25px;border-radius:8px;">
-                    <h2 style="color:#1e3a8a;margin-top:0;">Exam Guru UP</h2>
+                    <h2 style="color:#1e3a8a;margin-top:0;">PrepZenith</h2>
                     <p>Hello <b>${tempUser.name}</b>,</p>
-                    <p>Here is your new verification link for Exam Guru UP:</p>
+                    <p>Here is your new verification link for PrepZenith:</p>
                     <p style="text-align:center;margin:30px 0;">
                         <a href="${verifyLink}" style="background:#2563eb;color:white;padding:12px 25px;border-radius:5px;text-decoration:none;font-weight:bold;display:inline-block;">
                             Verify Email
@@ -165,7 +165,7 @@ router.post("/resend-verification", async (req, res) => {
                     </p>
                     <hr style="border:none;border-top:1px solid #e5e7eb;margin:20px 0;">
                     <p style="font-size:11px;color:#999;text-align:center;margin:0;">
-                        © ${new Date().getFullYear()} Exam Guru UP
+                        © ${new Date().getFullYear()} PrepZenith
                     </p>
                 </div>
             </div>
@@ -174,7 +174,7 @@ router.post("/resend-verification", async (req, res) => {
         const textContent = `
 Hello ${tempUser.name},
 
-Here is your new verification link for Exam Guru UP:
+Here is your new verification link for PrepZenith:
 
 ${verifyLink}
 
@@ -183,10 +183,10 @@ This link will expire in 10 minutes.
 If you did not request this, please ignore this email.
 
 Regards,
-Exam Guru UP Team
+PrepZenith Team
         `;
 
-        await sendBrevoEmail(email, "Resend Verification - Exam Guru UP", htmlContent, textContent);
+        await sendBrevoEmail(email, "Resend Verification - PrepZenith", htmlContent, textContent);
 
         res.json({ message: "Verification email resent." });
 
@@ -344,9 +344,9 @@ router.post("/forgot-password", async (req, res) => {
         const htmlContent = `
             <div style="font-family:Arial;background:#f4f6f9;padding:30px;">
                 <div style="max-width:500px;margin:auto;background:#ffffff;padding:25px;border-radius:8px;">
-                    <h2 style="color:#1e3a8a;margin-top:0;">Exam Guru UP</h2>
+                    <h2 style="color:#1e3a8a;margin-top:0;">PrepZenith</h2>
                     <p>Hello <b>${user.name}</b>,</p>
-                    <p>You requested to reset your password for Exam Guru UP.</p>
+                    <p>You requested to reset your password for PrepZenith.</p>
                     <p style="text-align:center;margin:30px 0;">
                         <a href="${resetLink}" style="background:#dc2626;color:white;padding:12px 25px;border-radius:5px;text-decoration:none;font-weight:bold;display:inline-block;">
                             Reset Password
@@ -357,7 +357,7 @@ router.post("/forgot-password", async (req, res) => {
                     </p>
                     <hr style="border:none;border-top:1px solid #e5e7eb;margin:20px 0;">
                     <p style="font-size:11px;color:#999;text-align:center;margin:0;">
-                        © ${new Date().getFullYear()} Exam Guru UP
+                        © ${new Date().getFullYear()} PrepZenith
                     </p>
                 </div>
             </div>
@@ -366,7 +366,7 @@ router.post("/forgot-password", async (req, res) => {
         const textContent = `
 Hello ${user.name},
 
-You requested to reset your password for Exam Guru UP.
+You requested to reset your password for PrepZenith.
 
 Click the link below to reset your password:
 
@@ -377,10 +377,10 @@ This link expires in 1 hour.
 If you did not request this, please ignore this email.
 
 Regards,
-Exam Guru UP Team
+PrepZenith Team
         `;
 
-        await sendBrevoEmail(user.email, "Reset Password - Exam Guru UP", htmlContent, textContent);
+        await sendBrevoEmail(user.email, "Reset Password - PrepZenith", htmlContent, textContent);
 
         res.json({ message: "Reset link sent to email" });
 

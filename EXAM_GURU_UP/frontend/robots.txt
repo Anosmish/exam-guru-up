@@ -1,7 +1,7 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://examguruup.netlify.app//sitemap.xml
+Sitemap: https://prepzenith.netlify.app//sitemap.xml
 
 Disallow: /admin/
 Disallow: /dashboards/
