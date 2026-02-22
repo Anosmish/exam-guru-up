@@ -153,6 +153,14 @@ async function updateProfile(){
     }
 }
 
+document.getElementById("logoutBtn")
+.addEventListener("click", ()=>{
+
+    localStorage.clear();
+    window.location.href="../index.html";
+
+});
+
 /* ================= CHANGE PASSWORD ================= */
 
 async function changePassword(){

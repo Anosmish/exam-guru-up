@@ -3,6 +3,8 @@
 <head>
     <title>Dashboard Management</title>
     <link rel="stylesheet" href="admin.css">
+    <script src="../config.js" defer></script>
+<script src="admin.js" defer></script>
 </head>
 <body>
 
@@ -14,7 +16,7 @@
     <a href="admin-categories.html">📚 Categories</a>
     <a href="admin-dashboards.html">🖥 Dashboard Management</a>
     <a href="admin-upload.html">  Uploads</a>
-    <a href="#" onclick="adminLogout()">🚪 Logout</a>
+    <a href="#" id = "logoutBtn">🚪 Logout</a>
 </div>
 
 <div class="main">
@@ -28,7 +30,7 @@
         <input type="text" id="dashRoute" placeholder="Route (ex: ssc-dashboard.html)"><br><br>
         <input type="text" id="dashDesc" placeholder="Description"><br><br>
 
-        <button onclick="createDashboard()">Create</button>
+       <button id="createDashboardBtn">Create</button>
     </div>
 
     <!-- ALL DASHBOARDS -->
@@ -37,7 +39,6 @@
         <div id="dashboardList"></div>
     </div>
 </div>
-<script src="../config.js"></script>
-<script src="admin.js"></script>
+
 </body>
 </html>
