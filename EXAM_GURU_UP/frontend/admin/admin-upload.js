@@ -94,7 +94,15 @@ form.addEventListener("submit", async function(e){
         body:formData
     });
 
-    const data = await res.json();
+    let data;
+
+try {
+    data = await res.json();
+} catch (err) {
+    console.error("Not JSON response:", err);
+    alert("Server Error (Check backend logs)");
+    return;
+}
 
     if(res.ok){
         alert("Uploaded Successfully ✅");
@@ -115,7 +123,15 @@ async function loadFiles(){
         headers:{ Authorization:"Bearer "+token }
     });
 
-    const data = await res.json();
+    let data;
+
+try {
+    data = await res.json();
+} catch (err) {
+    console.error("Not JSON response:", err);
+    alert("Server Error (Check backend logs)");
+    return;
+}
     fileList.innerHTML="";
 
     if(data.length===0){
