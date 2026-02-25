@@ -139,16 +139,25 @@ try {
         return;
     }
 
-    data.forEach(item=>{
-        fileList.innerHTML += `
-        <div>
-            <strong>${item.title}</strong><br>
-            Branch: ${item.subCategory || "-"}<br>
-            <a href="${item.pdfUrl}" target="_blank">View PDF</a>
-            <br><br>
-            <button class="danger" onclick="deleteFile('${item._id}','${type}')">Delete</button>
-        </div>`;
-    });
+    // replace innerHTML loop with this:
+fileList.innerHTML = ""; // clear first
+
+data.forEach(item => {
+    const div = document.createElement("div");
+
+    div.innerHTML = `
+        <strong>${item.title}</strong><br>
+        Branch: ${item.subCategory || "-"}<br>
+        <a href="${item.pdfUrl}" target="_blank">View PDF</a>
+        <br><br>
+        <button class="danger">Delete</button>
+    `;
+
+    const btn = div.querySelector("button.danger");
+    btn.addEventListener("click", () => deleteFile(item._id, type));
+
+    fileList.appendChild(div);
+});
 }
 
 /* ================= DELETE ================= */
