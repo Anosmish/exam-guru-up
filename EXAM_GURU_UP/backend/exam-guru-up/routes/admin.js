@@ -17,7 +17,7 @@ const Practical = require("../models/Practical");
 
 /* ================= MULTER CONFIG ================= */
 
-const multer = require("multer");
+
 
 const upload = multer({
   storage: multer.memoryStorage(),  // memory storage
