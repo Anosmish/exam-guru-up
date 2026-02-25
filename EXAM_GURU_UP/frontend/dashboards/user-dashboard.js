@@ -213,3 +213,73 @@ function renderList(elementId, items) {
         `;
     });
 }
+
+/* ==========================================
+   UI INTERACTION LOGIC (Popup/Modal Handler)
+   Add this to the bottom of user-dashboard.js
+   ========================================== */
+
+document.addEventListener('DOMContentLoaded', () => {
+    
+    // 1. Elements Selection
+    const backdrop = document.getElementById('modalBackdrop');
+    const closeButtons = document.querySelectorAll('.close-modal-btn');
+    const allSections = document.querySelectorAll('.section');
+
+    // 2. Map Cards to Section IDs
+    const cardMap = {
+        'papersCard': 'papers',
+        'notesCard': 'notes',
+        'practicalsCard': 'practicals',
+        'projectsCard': 'projects'
+    };
+
+    // 3. Function to Open Modal
+    function openModal(sectionId) {
+        // Hide any currently open sections first
+        closeAllModals();
+        
+        const section = document.getElementById(sectionId);
+        if (section) {
+            backdrop.classList.add('active'); // Show dark background
+            section.classList.add('active');  // Show popup with animation
+        }
+    }
+
+    // 4. Function to Close All Modals
+    function closeAllModals() {
+        backdrop.classList.remove('active');
+        allSections.forEach(sec => {
+            sec.classList.remove('active');
+        });
+    }
+
+    // 5. Add Click Events to Cards
+    Object.keys(cardMap).forEach(cardId => {
+        const card = document.getElementById(cardId);
+        if (card) {
+            card.addEventListener('click', (e) => {
+                // Prevent bubbling if needed, though usually fine here
+                e.stopPropagation(); 
+                openModal(cardMap[cardId]);
+            });
+        }
+    });
+
+    // 6. Add Click Events to Close Buttons (X)
+    closeButtons.forEach(btn => {
+        btn.addEventListener('click', closeAllModals);
+    });
+
+    // 7. Add Click Event to Backdrop (Click outside to close)
+    if (backdrop) {
+        backdrop.addEventListener('click', closeAllModals);
+    }
+
+    // Optional: Close on Escape key press
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeAllModals();
+        }
+    });
+});
