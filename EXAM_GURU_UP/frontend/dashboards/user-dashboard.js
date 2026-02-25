@@ -204,7 +204,9 @@ function renderList(elementId, items) {
             <div class="pdf-item">
                 ${item.title}
                 <br>
-                <a href="${API_BASE_URL}${item.pdfUrl}" target="_blank">
+                <a href="${item.pdfUrl.startsWith('http') 
+    ? item.pdfUrl.trim() 
+    : 'https://' + item.pdfUrl.trim()}" target="_blank">
                     Download PDF
                 </a>
             </div>

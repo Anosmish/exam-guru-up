@@ -144,7 +144,7 @@ try {
         <div>
             <strong>${item.title}</strong><br>
             Branch: ${item.subCategory || "-"}<br>
-            <a href="${API_BASE_URL}${item.pdfUrl}" target="_blank">View PDF</a>
+            <a href="${item.pdfUrl}" target="_blank">View PDF</a>
             <br><br>
             <button class="danger" onclick="deleteFile('${item._id}','${type}')">Delete</button>
         </div>`;
