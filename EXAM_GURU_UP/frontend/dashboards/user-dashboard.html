@@ -1,173 +1,391 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Diploma Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diploma Dashboard | PrepZenith</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
-        body {
-            font-family: Arial;
-            margin: 0;
-            background: #f4f6f9;
+        :root {
+            --primary: #4F46E5; /* Indigo */
+            --primary-dark: #4338ca;
+            --secondary: #ec4899; /* Pink accent */
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --transition: all 0.3s ease;
         }
 
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- Header --- */
         .header {
-            background: #1e3a8a;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
-            padding: 15px 20px;
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(79, 70, 229, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
 
         .header h2 {
             margin: 0;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
+        .logo {
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        #welcomeUser {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin: 0;
+            font-weight: 300;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* Profile Button */
+        .profile-btn {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: inherit;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+
+        .profile-btn:hover {
+            background: white;
+            color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        a { text-decoration: none; }
+
+        /* --- Main Content --- */
         .content {
-            padding: 20px;
+            padding: 2rem 5%;
+            flex: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 90%;
+            animation: fadeIn 0.6s ease-out;
         }
 
+        h3 {
+            color: var(--text-main);
+            border-left: 5px solid var(--primary);
+            padding-left: 15px;
+            margin-bottom: 25px;
+        }
+
+        #userSubCategory {
+            color: var(--primary);
+        }
+
+        /* --- Grid Cards --- */
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
         }
 
         .card {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            background: var(--card-bg);
+            padding: 30px 20px;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
             cursor: pointer;
-            transition: 0.3s;
+            transition: var(--transition);
             text-align: center;
+            border: 1px solid transparent;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            font-weight: 600;
+            color: var(--text-main);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Icon styling inside cards */
+        .card i {
+            font-size: 2.5rem;
+            color: var(--primary);
+            transition: var(--transition);
+            background: #e0e7ff;
+            padding: 15px;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border-color: var(--primary);
         }
 
+        .card:hover i {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        /* --- Sections & Forms --- */
         .section {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
             margin-top: 30px;
-            display: none;
+            display: none; /* Controlled by your JS */
+            animation: slideUp 0.4s ease-out;
         }
 
-        select, button {
-            padding: 10px;
-            margin-top: 10px;
+        .section h3 {
+            border: none;
+            padding: 0;
+            text-align: center;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        select, input[type="number"], button {
             width: 100%;
+            padding: 12px 15px;
+            margin-top: 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: inherit;
+            box-sizing: border-box;
+            transition: var(--transition);
+            background: #f9fafb;
         }
 
+        select:focus, input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+        }
+
+        button {
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            margin-top: 25px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.4);
+        }
+
+        /* --- PDF List --- */
         .pdf-list {
-            margin-top: 15px;
+            margin-top: 25px;
+            display: grid;
+            gap: 10px;
         }
 
         .pdf-item {
-            background: white;
-            padding: 10px;
-            margin-bottom: 8px;
-            border-radius: 6px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            background: #f9fafb;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid var(--secondary);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-        .header-right{
-    display: flexbox;
-    gap:10px;
-    align-items: center;
-}
 
-        a {
-            text-decoration: none;
-            color: #2563eb;
-            font-weight: bold;
+        .pdf-item:hover {
+            background: white;
+            transform: translateX(5px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        /* --- Mobile Responsiveness --- */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .header-right {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .content {
+                width: 90%;
+                padding: 1rem 5%;
+            }
+
+            .grid {
+                grid-template-columns: 1fr; /* Stack cards */
+            }
+        }
+
+        /* --- Animations --- */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
     </style>
+    
     <script src="../config.js" defer></script>
-<script src="user-dashboard.js" defer></script>
-
+    <script src="user-dashboard.js" defer></script>
 </head>
 <body>
 
-<div class="header">
-    <h2 id="dashboardTitle"><div class="logo">📘 PrepZenith</div></h2>
-    <p id="welcomeUser"></p>
-    
-</div>
-<div class="header-right">
-
-
-
-<a href="profile.html">
-<button class="profile-btn">👤 Profile</button>
-</a>
-
-
-
-</div>
-
-<div class="content">
-
-    <h3>Branch: <span id="userSubCategory"></span></h3>
-
-    <div class="grid">
-
-        <div class="card" id="papersCard">
-            📄 Previous Year Papers
+    <div class="header">
+        <div class="header-left">
+            <h2 id="dashboardTitle">
+                <i class="fas fa-book-reader"></i> 
+                <span class="logo">PrepZenith</span>
+            </h2>
+            <p id="welcomeUser"></p>
         </div>
-
-        <div class="card" id="notesCard">
-            📘 Notes
-        </div>
-
-        <div class="card" id="practicalsCard">
-            🧪 Practicals
-        </div>
-
-        <div class="card" id="projectsCard">
-            🚀 Projects
-        </div>
-
-    </div>
-
-    <!-- PAPERS SECTION -->
-    <div id="papers" class="section">
         
-        <input type="number" name="semesterSelect" placeholder="Enter Semester">
-        <h3>Select Subject</h3>
-        <select id="paperSubject"></select>
-        <button id="loadPapersBtn">Load Papers</button>
-        <div id="paperList" class="pdf-list"></div>
+        <div class="header-right">
+            <a href="profile.html">
+                <button class="profile-btn">
+                    <i class="fas fa-user-circle"></i> Profile
+                </button>
+            </a>
+        </div>
     </div>
 
-    <!-- NOTES SECTION -->
-    <div id="notes" class="section">
-        <h3>Select Subject</h3>
-        <input type="number" name="semesterSelect" placeholder="Enter Semester">
-        <select id="notesSubject"></select>
-        <input type="number" name="unitSelect" placeholder="Select unit">
-        
-        
-        <button id="loadNotesBtn">Load Notes</button>
-        <div id="notesList" class="pdf-list"></div>
-    </div>
+    <div class="content">
 
-    <!-- PRACTICALS SECTION -->
-    <div id="practicals" class="section">
-        <h3>Select Subject</h3>
-        <select id="practicalSubject"></select>
-        <button id="loadPracticalsBtn">Load Practicals</button>
-        <div id="practicalList" class="pdf-list"></div>
-    </div>
+        <h3>🎓 Branch: <span id="userSubCategory">Loading...</span></h3>
 
-    <!-- PROJECTS SECTION -->
-    <div id="projects" class="section">
-        <h3>Select Project Type</h3>
-        <select id="projectType">
-            <option value="web">Web Projects</option>
-            <option value="iot">IoT Projects</option>
-            <option value="final-year">Final Year Projects</option>
-        </select>
-        <button id="loadProjectsBtn">Load Projects</button>
-        <div id="projectList" class="pdf-list"></div>
-    </div>
+        <div class="grid">
 
-</div>
+            <div class="card" id="papersCard">
+                <i class="fas fa-file-alt"></i>
+                <span>Previous Papers</span>
+            </div>
+
+            <div class="card" id="notesCard">
+                <i class="fas fa-sticky-note"></i>
+                <span>Study Notes</span>
+            </div>
+
+            <div class="card" id="practicalsCard">
+                <i class="fas fa-flask"></i>
+                <span>Lab Practicals</span>
+            </div>
+
+            <div class="card" id="projectsCard">
+                <i class="fas fa-rocket"></i>
+                <span>Projects</span>
+            </div>
+
+        </div>
+
+        <div id="papers" class="section">
+            <h3><i class="fas fa-file-alt"></i> Download Papers</h3>
+            <input type="number" name="semesterSelect" placeholder="Enter Semester (e.g., 3)">
+            <select id="paperSubject">
+                <option value="" disabled selected>Select Subject</option>
+                </select>
+            <button id="loadPapersBtn"><i class="fas fa-download"></i> Load Papers</button>
+            <div id="paperList" class="pdf-list"></div>
+        </div>
+
+        <div id="notes" class="section">
+            <h3><i class="fas fa-book-open"></i> Study Notes</h3>
+            <input type="number" name="semesterSelect" placeholder="Enter Semester (e.g., 3)">
+            <select id="notesSubject">
+                <option value="" disabled selected>Select Subject</option>
+            </select>
+            <input type="number" name="unitSelect" placeholder="Enter Unit Number">
+            <button id="loadNotesBtn"><i class="fas fa-search"></i> Load Notes</button>
+            <div id="notesList" class="pdf-list"></div>
+        </div>
+
+        <div id="practicals" class="section">
+            <h3><i class="fas fa-vial"></i> Lab Practicals</h3>
+            <select id="practicalSubject">
+                <option value="" disabled selected>Select Subject</option>
+            </select>
+            <button id="loadPracticalsBtn"><i class="fas fa-eye"></i> View Practicals</button>
+            <div id="practicalList" class="pdf-list"></div>
+        </div>
+
+        <div id="projects" class="section">
+            <h3><i class="fas fa-project-diagram"></i> Projects Hub</h3>
+            <select id="projectType">
+                <option value="web">Web Development</option>
+                <option value="iot">IoT / Embedded</option>
+                <option value="final-year">Final Year Projects</option>
+            </select>
+            <button id="loadProjectsBtn"><i class="fas fa-tasks"></i> Load Projects</button>
+            <div id="projectList" class="pdf-list"></div>
+        </div>
+
+    </div>
 
 </body>
 </html>
