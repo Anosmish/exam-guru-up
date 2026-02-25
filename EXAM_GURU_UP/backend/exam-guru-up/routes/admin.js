@@ -12,20 +12,19 @@ const Category = require("../models/Category");
 const Note = require("../models/Note");
 const Paper = require("../models/Paper");
 const Project = require("../models/Project");
+const Practical = require("../models/Practical");
+/* ================= MULTER CONFIG ================= */
 
 /* ================= MULTER CONFIG ================= */
 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, "uploads/");
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + "-" + file.originalname);
-    }
+const multer = require("multer");
+
+const upload = multer({
+  storage: multer.memoryStorage(),  // memory storage
+  limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
 });
 
-const upload = multer({ storage });
-
+/* ================================================= */
 /* =================================================
                 QUESTION MANAGEMENT
 ================================================= */
@@ -153,55 +152,101 @@ router.delete("/delete-user/:id", verifyToken, isAdmin, async (req, res) => {
 ================================================= */
 
 // UPLOAD CONTENT (Note / Paper / Project)
-router.post("/upload-content",
-    verifyToken,
-    isAdmin,
-    upload.single("pdf"),
-    async (req, res) => {
+const supabase = require("../config/supabase");
+const { v4: uuidv4 } = require("uuid");
 
-        try {
-            const { contentType, subCategory, subject, semester, unit, title, type } = req.body;
+router.post(
+  "/upload-content",
+  verifyToken,
+  isAdmin,
+  upload.single("pdf"),
+  
+  async (req, res) => {
+    try {
 
-            const pdfUrl = `/uploads/${req.file.filename}`;
+      const {
+        contentType,
+        subCategory,
+        subject,
+        semester,
+        unit,
+        title,
+        type
+      } = req.body;
 
-            let saved;
+      if (req.file.mimetype !== "application/pdf") {
+  return res.status(400).json({ message: "Only PDF files allowed" });
+}
 
-            if (contentType === "note") {
-                saved = await Note.create({
-                    subCategory,
-                    subject,
-                    semester,
-                    unit,
-                    title,
-                    pdfUrl
-                });
-            }
+      const fileExt = req.file.originalname.split(".").pop();
+      const fileName = `${uuidv4()}.${fileExt}`;
 
-            if (contentType === "paper") {
-                saved = await Paper.create({
-                    subCategory,
-                    subject,
-                    semester,
-                    title,
-                    pdfUrl
-                });
-            }
+      // 🔥 Upload to Supabase
+      const { error } = await supabase.storage
+        .from("study-material")
+        .upload(fileName, req.file.buffer, {
+          contentType: req.file.mimetype
+        });
 
-            if (contentType === "project") {
-                saved = await Project.create({
-                    subCategory,
-                    type,
-                    title,
-                    pdfUrl
-                });
-            }
+      if (error) {
+        return res.status(500).json({ message: error.message });
+      }
 
-            res.json({ message: "Uploaded Successfully", data: saved });
+      // 🔥 Get Public URL
+      const { data: publicUrlData } = supabase.storage
+        .from("study-material")
+        .getPublicUrl(fileName);
 
-        } catch (err) {
-            res.status(500).json({ message: "Upload failed", error: err.message });
-        }
+      const pdfUrl = publicUrlData.publicUrl;
+
+      let saved;
+
+      if (contentType === "note") {
+        saved = await Note.create({
+          subCategory,
+          subject,
+          semester,
+          unit,
+          title,
+          pdfUrl
+        });
+      }
+
+      if (contentType === "paper") {
+        saved = await Paper.create({
+          subCategory,
+          subject,
+          semester,
+          title,
+          pdfUrl
+        });
+      }
+
+      if (contentType === "project") {
+        saved = await Project.create({
+          subCategory,
+          type,
+          title,
+          pdfUrl
+        });
+      }
+
+      if (contentType === "practical") {
+  saved = await Practical.create({
+    subCategory,
+    subject,
+    semester,
+    title,
+    pdfUrl
+  });
+}
+
+      res.json({ message: "Uploaded Successfully", data: saved });
+
+    } catch (err) {
+      res.status(500).json({ message: "Upload failed", error: err.message });
     }
+  }
 );
 
 // LIST CONTENT
@@ -212,42 +257,43 @@ router.get("/list-content",
 
         const { type } = req.query;
         let data = [];
-
-        if (type === "note") data = await Note.find();
-        if (type === "paper") data = await Paper.find();
-        if (type === "project") data = await Project.find();
-
+if (type === "note") data = await Note.find();
+if (type === "paper") data = await Paper.find();
+if (type === "project") data = await Project.find();
+if (type === "practical") data = await Practical.find();
         res.json(data);
     }
 );
 
 // DELETE CONTENT + FILE
-router.delete("/delete-content/:id",
-    verifyToken,
-    isAdmin,
-    async (req, res) => {
+router.delete(
+  "/delete-content/:id",
+  verifyToken,
+  isAdmin,
+  async (req, res) => {
 
-        const { type } = req.query;
+    const { type } = req.query;
 
-        let model;
+    let model;
 
-        if (type === "note") model = Note;
-        if (type === "paper") model = Paper;
-        if (type === "project") model = Project;
+if (type === "note") model = Note;
+if (type === "paper") model = Paper;
+if (type === "project") model = Project;
+if (type === "practical") model = Practical;
+    const item = await model.findById(req.params.id);
+    if (!item) return res.status(404).json({ message: "Not Found" });
 
-        const item = await model.findById(req.params.id);
-        if (!item) return res.status(404).json({ message: "Not Found" });
+    // Extract filename from URL
+    const fileName = item.pdfUrl.split("/").pop();
 
-        // Delete file from uploads folder
-        const filePath = path.join(__dirname, "..", item.pdfUrl);
-        if (fs.existsSync(filePath)) {
-            fs.unlinkSync(filePath);
-        }
+    await supabase.storage
+      .from("study-material")
+      .remove([fileName]);
 
-        await model.findByIdAndDelete(req.params.id);
+    await model.findByIdAndDelete(req.params.id);
 
-        res.json({ message: "Deleted Successfully" });
-    }
+    res.json({ message: "Deleted Successfully" });
+  }
 );
 
 // GET ALL CATEGORIES
