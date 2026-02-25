@@ -6,289 +6,209 @@
     <title>Diploma Dashboard | PrepZenith</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         :root {
-            --primary: #4F46E5; /* Indigo */
-            --primary-dark: #4338ca;
-            --secondary: #ec4899; /* Pink accent */
-            --bg-color: #f3f4f6;
-            --card-bg: #ffffff;
-            --text-main: #1f2937;
-            --text-muted: #6b7280;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --transition: all 0.3s ease;
+            --primary: #6366f1; /* Indigo */
+            --secondary: #ec4899; /* Pink */
+            --glass-bg: rgba(255, 255, 255, 0.95);
+            --bg-color: #f8fafc;
+            --text-dark: #1e293b;
+            --shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.2);
         }
 
         body {
             font-family: 'Poppins', sans-serif;
             margin: 0;
-            background-color: var(--bg-color);
-            color: var(--text-main);
+            background: var(--bg-color);
+            background-image: radial-gradient(#e0e7ff 1px, transparent 1px);
+            background-size: 20px 20px;
+            color: var(--text-dark);
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
         }
 
         /* --- Header --- */
         .header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            padding: 1rem 5%;
+            background: white;
+            padding: 15px 5%;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 4px 20px rgba(79, 70, 229, 0.3);
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
             position: sticky;
             top: 0;
-            z-index: 1000;
+            z-index: 100;
         }
 
-        .header h2 {
-            margin: 0;
-            font-size: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .logo {
-            font-weight: 700;
-            letter-spacing: 0.5px;
-        }
-
-        #welcomeUser {
-            font-size: 0.9rem;
-            opacity: 0.9;
-            margin: 0;
-            font-weight: 300;
-        }
-
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        /* Profile Button */
+        .header h2 { margin: 0; display: flex; align-items: center; gap: 10px; color: var(--primary); }
         .profile-btn {
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(5px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: var(--primary);
             color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
+            padding: 8px 20px;
+            border-radius: 30px;
+            border: none;
             cursor: pointer;
-            transition: var(--transition);
-            font-family: inherit;
-            font-weight: 500;
+            transition: 0.3s;
             display: flex;
             align-items: center;
             gap: 8px;
-            text-transform: uppercase;
-            font-size: 0.85rem;
         }
-
-        .profile-btn:hover {
-            background: white;
-            color: var(--primary);
-            transform: translateY(-2px);
-        }
-
+        .profile-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(99, 102, 241, 0.4); }
         a { text-decoration: none; }
 
-        /* --- Main Content --- */
-        .content {
-            padding: 2rem 5%;
-            flex: 1;
-            max-width: 1200px;
-            margin: 0 auto;
-            width: 90%;
-            animation: fadeIn 0.6s ease-out;
-        }
+        .content { padding: 2rem 5%; max-width: 1200px; margin: 0 auto; }
 
-        h3 {
-            color: var(--text-main);
-            border-left: 5px solid var(--primary);
-            padding-left: 15px;
-            margin-bottom: 25px;
-        }
-
-        #userSubCategory {
-            color: var(--primary);
-        }
-
-        /* --- Grid Cards --- */
+        /* --- Animated Grid Cards --- */
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 25px;
-            margin-bottom: 40px;
+            margin-top: 20px;
         }
 
         .card {
-            background: var(--card-bg);
-            padding: 30px 20px;
-            border-radius: 16px;
-            box-shadow: var(--shadow);
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
             cursor: pointer;
-            transition: var(--transition);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Bouncy effect */
             text-align: center;
-            border: 1px solid transparent;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            font-weight: 600;
-            color: var(--text-main);
+            border: 2px solid transparent;
             position: relative;
             overflow: hidden;
         }
 
-        /* Icon styling inside cards */
         .card i {
-            font-size: 2.5rem;
-            color: var(--primary);
-            transition: var(--transition);
-            background: #e0e7ff;
-            padding: 15px;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: block;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
             border-color: var(--primary);
         }
 
-        .card:hover i {
-            background: var(--primary);
-            color: white;
-            transform: scale(1.1);
-        }
-
-        /* --- Sections & Forms --- */
+        /* --- The Expanded Section (Modal Style) --- */
         .section {
-            background: white;
+            display: none; /* Hidden by default */
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            width: 90%;
+            max-width: 500px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
             padding: 30px;
-            border-radius: 16px;
-            box-shadow: var(--shadow);
-            margin-top: 30px;
-            display: none; /* Controlled by your JS */
-            animation: slideUp 0.4s ease-out;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            z-index: 1000;
+            border: 1px solid rgba(255,255,255,0.5);
+            max-height: 85vh;
+            overflow-y: auto;
         }
 
+        /* Animation class applied by JS logic (if needed) or naturally via display block */
+        .section.active-popup {
+            display: block;
+            animation: expandPopup 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes expandPopup {
+            0% { opacity: 0; transform: translate(-50%, -40%) scale(0.9); }
+            100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
+
+        /* Backdrop overlay */
+        .overlay-backdrop {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(3px);
+            z-index: 999;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Form Elements inside Expanded Card */
         .section h3 {
-            border: none;
-            padding: 0;
             text-align: center;
-            font-size: 1.2rem;
-            margin-bottom: 20px;
             color: var(--primary);
+            font-size: 1.5rem;
+            margin-top: 0;
         }
 
-        select, input[type="number"], button {
+        select, input {
             width: 100%;
-            padding: 12px 15px;
+            padding: 14px;
             margin-top: 15px;
-            border: 2px solid #e5e7eb;
-            border-radius: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
             font-size: 1rem;
-            font-family: inherit;
+            outline: none;
             box-sizing: border-box;
-            transition: var(--transition);
-            background: #f9fafb;
+            background: #f8fafc;
+            transition: 0.3s;
         }
 
         select:focus, input:focus {
-            outline: none;
             border-color: var(--primary);
             background: white;
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
         }
 
-        button {
-            background: var(--primary);
+        button.load-btn {
+            width: 100%;
+            padding: 14px;
+            margin-top: 20px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
-            font-weight: 600;
             border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
             cursor: pointer;
-            margin-top: 25px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            transition: 0.3s;
         }
 
-        button:hover {
-            background: var(--primary-dark);
+        button.load-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.4);
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
         }
 
-        /* --- PDF List --- */
-        .pdf-list {
-            margin-top: 25px;
-            display: grid;
-            gap: 10px;
+        /* Close Button (X) */
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 1.5rem;
+            color: #94a3b8;
+            cursor: pointer;
+            transition: 0.2s;
         }
+        .close-btn:hover { color: #ef4444; }
 
+        /* PDF List Items */
+        .pdf-list { margin-top: 20px; }
         .pdf-item {
-            background: #f9fafb;
-            padding: 15px;
-            border-radius: 8px;
-            border-left: 4px solid var(--secondary);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            transition: var(--transition);
+            background: white;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
             display: flex;
             align-items: center;
             gap: 10px;
-        }
-
-        .pdf-item:hover {
-            background: white;
-            transform: translateX(5px);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        /* --- Mobile Responsiveness --- */
-        @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                gap: 15px;
-                text-align: center;
-            }
-            
-            .header-right {
-                width: 100%;
-                justify-content: center;
-            }
-
-            .content {
-                width: 90%;
-                padding: 1rem 5%;
-            }
-
-            .grid {
-                grid-template-columns: 1fr; /* Stack cards */
-            }
-        }
-
-        /* --- Animations --- */
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            border-left: 4px solid var(--secondary);
         }
 
     </style>
@@ -298,94 +218,125 @@
 </head>
 <body>
 
+    <div id="modalBackdrop" class="overlay-backdrop"></div>
+
     <div class="header">
-        <div class="header-left">
-            <h2 id="dashboardTitle">
-                <i class="fas fa-book-reader"></i> 
-                <span class="logo">PrepZenith</span>
-            </h2>
-            <p id="welcomeUser"></p>
-        </div>
-        
+        <h2 id="dashboardTitle"><i class="fas fa-book-reader"></i> &nbsp;PrepZenith</h2>
         <div class="header-right">
+            <span id="welcomeUser" style="margin-right: 10px; font-weight: 500;"></span>
             <a href="profile.html">
-                <button class="profile-btn">
-                    <i class="fas fa-user-circle"></i> Profile
-                </button>
+                <button class="profile-btn"><i class="fas fa-user"></i> Profile</button>
             </a>
         </div>
     </div>
 
     <div class="content">
-
-        <h3>🎓 Branch: <span id="userSubCategory">Loading...</span></h3>
+        <h3>📂 Branch: <span id="userSubCategory" style="color: var(--primary);">Loading...</span></h3>
 
         <div class="grid">
-
-            <div class="card" id="papersCard">
+            <div class="card" id="papersCard" onclick="openSection('papers')">
                 <i class="fas fa-file-alt"></i>
-                <span>Previous Papers</span>
+                <h3>Previous Papers</h3>
+                <p style="color: #64748b; font-size: 0.9rem;">Download semester wise papers</p>
             </div>
 
-            <div class="card" id="notesCard">
+            <div class="card" id="notesCard" onclick="openSection('notes')">
                 <i class="fas fa-sticky-note"></i>
-                <span>Study Notes</span>
+                <h3>Study Notes</h3>
+                <p style="color: #64748b; font-size: 0.9rem;">Chapter wise detailed notes</p>
             </div>
 
-            <div class="card" id="practicalsCard">
+            <div class="card" id="practicalsCard" onclick="openSection('practicals')">
                 <i class="fas fa-flask"></i>
-                <span>Lab Practicals</span>
+                <h3>Practicals</h3>
+                <p style="color: #64748b; font-size: 0.9rem;">Lab manuals and records</p>
             </div>
 
-            <div class="card" id="projectsCard">
+            <div class="card" id="projectsCard" onclick="openSection('projects')">
                 <i class="fas fa-rocket"></i>
-                <span>Projects</span>
+                <h3>Projects</h3>
+                <p style="color: #64748b; font-size: 0.9rem;">Ideas and source codes</p>
             </div>
-
         </div>
 
         <div id="papers" class="section">
+            <span class="close-btn" onclick="closeAll()">&times;</span>
             <h3><i class="fas fa-file-alt"></i> Download Papers</h3>
             <input type="number" name="semesterSelect" placeholder="Enter Semester (e.g., 3)">
-            <select id="paperSubject">
-                <option value="" disabled selected>Select Subject</option>
-                </select>
-            <button id="loadPapersBtn"><i class="fas fa-download"></i> Load Papers</button>
+            <select id="paperSubject"><option>Select Subject</option></select>
+            <button id="loadPapersBtn" class="load-btn">Get Papers</button>
             <div id="paperList" class="pdf-list"></div>
         </div>
 
         <div id="notes" class="section">
+            <span class="close-btn" onclick="closeAll()">&times;</span>
             <h3><i class="fas fa-book-open"></i> Study Notes</h3>
-            <input type="number" name="semesterSelect" placeholder="Enter Semester (e.g., 3)">
-            <select id="notesSubject">
-                <option value="" disabled selected>Select Subject</option>
-            </select>
-            <input type="number" name="unitSelect" placeholder="Enter Unit Number">
-            <button id="loadNotesBtn"><i class="fas fa-search"></i> Load Notes</button>
+            <input type="number" name="semesterSelect" placeholder="Enter Semester">
+            <select id="notesSubject"><option>Select Subject</option></select>
+            <input type="number" name="unitSelect" placeholder="Unit Number">
+            <button id="loadNotesBtn" class="load-btn">Get Notes</button>
             <div id="notesList" class="pdf-list"></div>
         </div>
 
         <div id="practicals" class="section">
+            <span class="close-btn" onclick="closeAll()">&times;</span>
             <h3><i class="fas fa-vial"></i> Lab Practicals</h3>
-            <select id="practicalSubject">
-                <option value="" disabled selected>Select Subject</option>
-            </select>
-            <button id="loadPracticalsBtn"><i class="fas fa-eye"></i> View Practicals</button>
+            <select id="practicalSubject"><option>Select Subject</option></select>
+            <button id="loadPracticalsBtn" class="load-btn">View Practicals</button>
             <div id="practicalList" class="pdf-list"></div>
         </div>
 
         <div id="projects" class="section">
-            <h3><i class="fas fa-project-diagram"></i> Projects Hub</h3>
+            <span class="close-btn" onclick="closeAll()">&times;</span>
+            <h3><i class="fas fa-project-diagram"></i> Projects</h3>
             <select id="projectType">
                 <option value="web">Web Development</option>
                 <option value="iot">IoT / Embedded</option>
-                <option value="final-year">Final Year Projects</option>
+                <option value="final-year">Final Year</option>
             </select>
-            <button id="loadProjectsBtn"><i class="fas fa-tasks"></i> Load Projects</button>
+            <button id="loadProjectsBtn" class="load-btn">Load Projects</button>
             <div id="projectList" class="pdf-list"></div>
         </div>
 
     </div>
+
+    <script>
+        function closeAll() {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(sec => {
+                sec.style.display = 'none';
+                sec.classList.remove('active-popup');
+            });
+            // Hide backdrop
+            document.getElementById('modalBackdrop').style.display = 'none';
+        }
+
+        function openSection(id) {
+            closeAll(); // Pehle sab band karo
+            
+            const section = document.getElementById(id);
+            const backdrop = document.getElementById('modalBackdrop');
+            
+            if(section) {
+                backdrop.style.display = 'block';
+                section.style.display = 'block'; // Ensure it's visible
+                
+                // Add class for animation trigger
+                setTimeout(() => {
+                    section.classList.add('active-popup');
+                }, 10);
+            }
+        }
+
+        // Close modal if user clicks on the dark background
+        document.getElementById('modalBackdrop').addEventListener('click', closeAll);
+
+        // Connect Cards to Functions (Agar JS file me event listeners nahi hain to ye backup hai)
+        document.getElementById('papersCard').addEventListener('click', () => openSection('papers'));
+        document.getElementById('notesCard').addEventListener('click', () => openSection('notes'));
+        document.getElementById('practicalsCard').addEventListener('click', () => openSection('practicals'));
+        document.getElementById('projectsCard').addEventListener('click', () => openSection('projects'));
+    </script>
 
 </body>
 </html>
