@@ -55,7 +55,6 @@ app.use("/api/student", require("./routes/student"));
 app.use("/api/categories", require("./routes/category"));
 app.use("/api/dashboard", require("./routes/dashboard"));
 
-app.use("/uploads", express.static("uploads"));
 
 /* ================= DATABASE ================= */
 
