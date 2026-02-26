@@ -42,7 +42,7 @@
         .profile-btn {
             padding: 8px 16px;
             background: var(--primary);
-            color: rgb(61, 87, 128);
+            color: rgb(255, 255, 255);
             border: none;
             border-radius: 20px;
             cursor: pointer;
@@ -205,34 +205,41 @@
             </div>
         </div>
 
-        <div id="papers" class="section">
-            <i class="fas fa-times close-modal-btn"></i>
-            <h3>Download Papers</h3>
-            <input type="number" name="semesterSelect" placeholder="Enter Semester">
-            <select id="paperSubject"></select>
-            <button id="loadPapersBtn">Load Papers</button>
-            <div id="paperList" class="pdf-list"></div>
-        </div>
+        <!-- PAPERS -->
+<div id="papers" class="section">
+    <i class="fas fa-times close-modal-btn"></i>
+    <h3>Download Papers</h3>
 
-        <div id="notes" class="section">
-            <i class="fas fa-times close-modal-btn"></i>
-            <h3>Study Notes</h3>
-            <input type="number" name="semesterSelect" placeholder="Enter Semester">
-            <select id="notesSubject"></select>
-            <input type="number" name="unitSelect" placeholder="Select unit">
-            <button id="loadNotesBtn">Load Notes</button>
-            <div id="notesList" class="pdf-list"></div>
-        </div>
+    <input type="number" id="papersSemester" placeholder="Enter Semester">
+    <select id="paperSubject"></select>
+    <button id="loadPapersBtn">Load Papers</button>
+    <div id="paperList" class="pdf-list"></div>
+</div>
 
-        <div id="practicals" class="section">
-            <i class="fas fa-times close-modal-btn"></i>
-            <h3>Lab Practicals</h3>
-            <input type="number" name="semesterSelect" placeholder="Enter Semester">
-            <select id="practicalSubject"></select>
-            <button id="loadPracticalsBtn">Load Practicals</button>
-            <div id="practicalList" class="pdf-list"></div>
-        </div>
+<!-- NOTES -->
+<div id="notes" class="section">
+    <i class="fas fa-times close-modal-btn"></i>
+    <h3>Study Notes</h3>
 
+    <input type="number" id="notesSemester" placeholder="Enter Semester">
+    <select id="notesSubject"></select>
+    <input type="number" id="unitSelect" placeholder="Select Unit">
+    <button id="loadNotesBtn">Load Notes</button>
+    <div id="notesList" class="pdf-list"></div>
+</div>
+
+<!-- PRACTICALS -->
+<div id="practicals" class="section">
+    <i class="fas fa-times close-modal-btn"></i>
+    <h3>Lab Practicals</h3>
+
+    <input type="number" id="practicalsSemester" placeholder="Enter Semester">
+    <select id="practicalSubject"></select>
+    <button id="loadPracticalsBtn">Load Practicals</button>
+    <div id="practicalList" class="pdf-list"></div>
+</div>
+
+<!-- PROJECTS -->
         <div id="projects" class="section">
             <i class="fas fa-times close-modal-btn"></i>
             <h3>Projects Hub</h3>

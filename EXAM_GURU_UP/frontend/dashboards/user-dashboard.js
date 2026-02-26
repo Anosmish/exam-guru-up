@@ -17,13 +17,14 @@ function init() {
             return;
         }
 
-        const welcome = document.getElementById("welcomeUser");
-        const subCat = document.getElementById("userSubCategory");
+        document.getElementById("welcomeUser").innerText =
+            "Welcome, " + user.name;
 
-        if (welcome) welcome.innerText = "Welcome, " + user.name;
-        if (subCat) subCat.innerText = user.subCategory;
+        document.getElementById("userSubCategory").innerText =
+            user.subCategory;
 
         bindEvents();
+        initModalSystem();
 
     } catch (err) {
         console.error("Init Error:", err);
@@ -37,36 +38,61 @@ function init() {
 
 function bindEvents() {
 
-    document.getElementById("papersCard")?.addEventListener("click", () => showSection("papers"));
-    document.getElementById("notesCard")?.addEventListener("click", () => showSection("notes"));
-    document.getElementById("practicalsCard")?.addEventListener("click", () => showSection("practicals"));
-    document.getElementById("projectsCard")?.addEventListener("click", () => showSection("projects"));
+    document.getElementById("loadPapersBtn")
+        ?.addEventListener("click", loadPapers);
 
-    document.getElementById("loadPapersBtn")?.addEventListener("click", loadPapers);
-    document.getElementById("loadNotesBtn")?.addEventListener("click", loadNotes);
-    document.getElementById("loadPracticalsBtn")?.addEventListener("click", loadPracticals);
-    document.getElementById("loadProjectsBtn")?.addEventListener("click", loadProjects);
+    document.getElementById("loadNotesBtn")
+        ?.addEventListener("click", loadNotes);
 
-    document.getElementById("logoutBtn")?.addEventListener("click", logout);
+    document.getElementById("loadPracticalsBtn")
+        ?.addEventListener("click", loadPracticals);
+
+    document.getElementById("loadProjectsBtn")
+        ?.addEventListener("click", loadProjects);
 }
 
-/* ================= SHOW SECTION ================= */
+/* ================= MODAL SYSTEM ================= */
 
-function showSection(id) {
-    document.querySelectorAll(".section")
-        .forEach(sec => sec.style.display = "none");
+function initModalSystem() {
 
-    const section = document.getElementById(id);
-    if (section) section.style.display = "block";
+    const backdrop = document.getElementById("modalBackdrop");
+    const closeButtons = document.querySelectorAll(".close-modal-btn");
+    const allSections = document.querySelectorAll(".section");
 
-    loadSubjects();
-}
+    const cardMap = {
+        papersCard: "papers",
+        notesCard: "notes",
+        practicalsCard: "practicals",
+        projectsCard: "projects"
+    };
 
-/* ================= LOGOUT ================= */
+    function openModal(sectionId) {
+        closeAll();
+        const section = document.getElementById(sectionId);
+        backdrop.classList.add("active");
+        section.classList.add("active");
+        loadSubjects();
+    }
 
-function logout() {
-    localStorage.clear();
-    window.location.href = "../index.html";
+    function closeAll() {
+        backdrop.classList.remove("active");
+        allSections.forEach(sec => sec.classList.remove("active"));
+    }
+
+    Object.keys(cardMap).forEach(cardId => {
+        document.getElementById(cardId)
+            ?.addEventListener("click", () => openModal(cardMap[cardId]));
+    });
+
+    closeButtons.forEach(btn =>
+        btn.addEventListener("click", closeAll)
+    );
+
+    backdrop.addEventListener("click", closeAll);
+
+    document.addEventListener("keydown", e => {
+        if (e.key === "Escape") closeAll();
+    });
 }
 
 /* ================= SAFE FETCH ================= */
@@ -74,20 +100,16 @@ function logout() {
 async function safeFetch(url) {
     try {
         const res = await fetch(url, {
-            headers: {
-                "Authorization": "Bearer " + token
-            }
+            headers: { Authorization: "Bearer " + token }
         });
 
-        if (!res.ok) {
-            throw new Error("Server error: " + res.status);
-        }
+        if (!res.ok) throw new Error(res.status);
 
         return await res.json();
 
     } catch (error) {
         console.error("Fetch Error:", error);
-        alert("Server unreachable. Check internet or try again.");
+        alert("Server unreachable.");
         return null;
     }
 }
@@ -108,26 +130,27 @@ async function loadSubjects() {
             const select = document.getElementById(id);
             if (!select) return;
 
-            select.innerHTML = "<option value=''>Select Subject</option>";
+            select.innerHTML =
+                "<option value=''>Select Subject</option>";
 
             data.forEach(sub => {
-                select.innerHTML += `<option value="${sub}">${sub}</option>`;
+                select.innerHTML +=
+                    `<option value="${sub}">${sub}</option>`;
             });
         });
 }
 
-/* ================= LOAD PAPERS ================= */
+/* ================= LOAD FUNCTIONS ================= */
 
 async function loadPapers() {
 
-    const semester = document.getElementById("semesterSelect")?.value || "";
-    const subject = document.getElementById("paperSubject")?.value;
+    const semester =
+        document.getElementById("papersSemester").value;
 
-    if (!subject) {
-        alert("Please select subject");
-        return;
-    }
-    
+    const subject =
+        document.getElementById("paperSubject").value;
+
+    if (!subject) return alert("Select subject");
 
     const data = await safeFetch(
         `${API_BASE_URL}/api/student/papers?subCategory=${user.subCategory}&semester=${semester}&subject=${subject}`
@@ -136,18 +159,18 @@ async function loadPapers() {
     renderList("paperList", data);
 }
 
-/* ================= LOAD NOTES ================= */
-
 async function loadNotes() {
 
-    const subject = document.getElementById("notesSubject")?.value;
-    const semester = document.getElementById("semesterSelect")?.value || "";
-    const unit = document.getElementById("unitSelect")?.value || "";
+    const subject =
+        document.getElementById("notesSubject").value;
 
-    if (!subject) {
-        alert("Please select subject");
-        return;
-    }
+    const semester =
+        document.getElementById("notesSemester").value;
+
+    const unit =
+        document.getElementById("unitSelect").value;
+
+    if (!subject) return alert("Select subject");
 
     const data = await safeFetch(
         `${API_BASE_URL}/api/student/notes?subCategory=${user.subCategory}&subject=${subject}&semester=${semester}&unit=${unit}`
@@ -156,18 +179,15 @@ async function loadNotes() {
     renderList("notesList", data);
 }
 
-/* ================= LOAD PRACTICALS ================= */
-
 async function loadPracticals() {
 
-    const subject = document.getElementById("practicalSubject")?.value;
-    const semester = document.getElementById("semesterSelect")?.value || "";
-    if (!subject) {
-        alert("Please select subject");
-        return;
-    }
-    
+    const subject =
+        document.getElementById("practicalSubject").value;
 
+    const semester =
+        document.getElementById("practicalsSemester").value;
+
+    if (!subject) return alert("Select subject");
 
     const data = await safeFetch(
         `${API_BASE_URL}/api/student/practicals?subCategory=${user.subCategory}&semester=${semester}&subject=${subject}`
@@ -176,11 +196,10 @@ async function loadPracticals() {
     renderList("practicalList", data);
 }
 
-/* ================= LOAD PROJECTS ================= */
-
 async function loadProjects() {
 
-    const type = document.getElementById("projectType")?.value;
+    const type =
+        document.getElementById("projectType").value;
 
     const data = await safeFetch(
         `${API_BASE_URL}/api/student/projects?subCategory=${user.subCategory}&type=${type}`
@@ -189,12 +208,12 @@ async function loadProjects() {
     renderList("projectList", data);
 }
 
-/* ================= RENDER LIST ================= */
+/* ================= RENDER ================= */
 
 function renderList(elementId, items) {
 
-    const container = document.getElementById(elementId);
-    if (!container) return;
+    const container =
+        document.getElementById(elementId);
 
     container.innerHTML = "";
 
@@ -204,86 +223,18 @@ function renderList(elementId, items) {
     }
 
     items.forEach(item => {
+
+        const url = item.pdfUrl.startsWith("http")
+            ? item.pdfUrl.trim()
+            : "https://" + item.pdfUrl.trim();
+
         container.innerHTML += `
             <div class="pdf-item">
-                ${item.title}
-                <br>
-                <a href="${item.pdfUrl.startsWith('http') 
-    ? item.pdfUrl.trim() 
-    : 'https://' + item.pdfUrl.trim()}" target="_blank">
+                ${item.title}<br>
+                <a href="${url}" target="_blank">
                     Download PDF
                 </a>
             </div>
         `;
     });
 }
-
-/* ==========================================
-   UI INTERACTION LOGIC (Popup/Modal Handler)
-   Add this to the bottom of user-dashboard.js
-   ========================================== */
-
-document.addEventListener('DOMContentLoaded', () => {
-    
-    // 1. Elements Selection
-    const backdrop = document.getElementById('modalBackdrop');
-    const closeButtons = document.querySelectorAll('.close-modal-btn');
-    const allSections = document.querySelectorAll('.section');
-
-    // 2. Map Cards to Section IDs
-    const cardMap = {
-        'papersCard': 'papers',
-        'notesCard': 'notes',
-        'practicalsCard': 'practicals',
-        'projectsCard': 'projects'
-    };
-
-    // 3. Function to Open Modal
-    function openModal(sectionId) {
-        // Hide any currently open sections first
-        closeAllModals();
-        
-        const section = document.getElementById(sectionId);
-        if (section) {
-            backdrop.classList.add('active'); // Show dark background
-            section.classList.add('active');  // Show popup with animation
-        }
-    }
-
-    // 4. Function to Close All Modals
-    function closeAllModals() {
-        backdrop.classList.remove('active');
-        allSections.forEach(sec => {
-            sec.classList.remove('active');
-        });
-    }
-
-    // 5. Add Click Events to Cards
-    Object.keys(cardMap).forEach(cardId => {
-        const card = document.getElementById(cardId);
-        if (card) {
-            card.addEventListener('click', (e) => {
-                // Prevent bubbling if needed, though usually fine here
-                e.stopPropagation(); 
-                openModal(cardMap[cardId]);
-            });
-        }
-    });
-
-    // 6. Add Click Events to Close Buttons (X)
-    closeButtons.forEach(btn => {
-        btn.addEventListener('click', closeAllModals);
-    });
-
-    // 7. Add Click Event to Backdrop (Click outside to close)
-    if (backdrop) {
-        backdrop.addEventListener('click', closeAllModals);
-    }
-
-    // Optional: Close on Escape key press
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            closeAllModals();
-        }
-    });
-});
