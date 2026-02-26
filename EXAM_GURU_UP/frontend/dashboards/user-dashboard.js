@@ -127,10 +127,7 @@ async function loadPapers() {
         alert("Please select subject");
         return;
     }
-    if (!semester) {
-        alert("Please select semester");
-        return;
-    }
+    
 
     const data = await safeFetch(
         `${API_BASE_URL}/api/student/papers?subCategory=${user.subCategory}&semester=${semester}&subject=${subject}`
@@ -169,10 +166,7 @@ async function loadPracticals() {
         alert("Please select subject");
         return;
     }
-    if (!semester) {
-        alert("Please select semester");
-        return;
-    }
+    
 
 
     const data = await safeFetch(
