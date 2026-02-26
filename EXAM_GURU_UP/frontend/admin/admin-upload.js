@@ -146,7 +146,7 @@ data.forEach(item => {
     const div = document.createElement("div");
 
     div.innerHTML = `
-        <strong>${item.title}</strong><br>
+        <strong background: red;>${item.title}</strong><br>
         Branch: ${item.subCategory || "-"}<br>
         <a href="${item.pdfUrl}" target="_blank">View PDF</a>
         <br><br>

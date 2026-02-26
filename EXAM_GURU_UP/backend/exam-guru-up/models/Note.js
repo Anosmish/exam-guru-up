@@ -4,7 +4,6 @@ const noteSchema = new mongoose.Schema({
     subCategory: String,     // CSE, ME, Civil (from user.subCategory)
     subject: String,
     semester: Number,
-    unit: Number,
     title: String,
     pdfUrl: String,
     uploadedBy: {

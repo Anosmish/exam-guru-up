@@ -169,13 +169,11 @@ async function loadNotes() {
     const semester =
         document.getElementById("notesSemester").value;
 
-    const unit =
-        document.getElementById("unitSelect").value;
 
     if (!subject) return alert("Select subject");
 
     const data = await safeFetch(
-        `${API_BASE_URL}/api/student/notes?subCategory=${user.subCategory}&subject=${subject}&semester=${semester}&unit=${unit}`
+        `${API_BASE_URL}/api/student/notes?subCategory=${user.subCategory}&subject=${subject}&semester=${semester}`
     );
 
     renderList("notesList", data);

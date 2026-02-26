@@ -169,7 +169,6 @@ router.post(
         subCategory,
         subject,
         semester,
-        unit,
         title,
         type
       } = req.body;
@@ -206,7 +205,6 @@ router.post(
           subCategory,
           subject,
           semester,
-          unit,
           title,
           pdfUrl
         });
