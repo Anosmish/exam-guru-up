@@ -68,6 +68,7 @@ function initModalSystem() {
 
     function openModal(sectionId) {
         closeAll();
+        document.body.classList.add("modal-open");
         const section = document.getElementById(sectionId);
         backdrop.classList.add("active");
         section.classList.add("active");
@@ -75,6 +76,7 @@ function initModalSystem() {
     }
 
     function closeAll() {
+        document.body.classList.remove("modal-open");
         backdrop.classList.remove("active");
         allSections.forEach(sec => sec.classList.remove("active"));
     }
