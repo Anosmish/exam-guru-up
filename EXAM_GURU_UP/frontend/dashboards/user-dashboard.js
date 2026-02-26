@@ -120,15 +120,20 @@ async function loadSubjects() {
 
 async function loadPapers() {
 
+    const semester = document.getElementById("semesterSelect")?.value || "";
     const subject = document.getElementById("paperSubject")?.value;
 
     if (!subject) {
         alert("Please select subject");
         return;
     }
+    if (!semester) {
+        alert("Please select semester");
+        return;
+    }
 
     const data = await safeFetch(
-        `${API_BASE_URL}/api/student/papers?subCategory=${user.subCategory}&subject=${subject}`
+        `${API_BASE_URL}/api/student/papers?subCategory=${user.subCategory}&semester=${semester}&subject=${subject}`
     );
 
     renderList("paperList", data);
@@ -159,14 +164,19 @@ async function loadNotes() {
 async function loadPracticals() {
 
     const subject = document.getElementById("practicalSubject")?.value;
-
+    const semester = document.getElementById("semesterSelect")?.value || "";
     if (!subject) {
         alert("Please select subject");
         return;
     }
+    if (!semester) {
+        alert("Please select semester");
+        return;
+    }
+
 
     const data = await safeFetch(
-        `${API_BASE_URL}/api/student/practicals?subCategory=${user.subCategory}&subject=${subject}`
+        `${API_BASE_URL}/api/student/practicals?subCategory=${user.subCategory}&semester=${semester}&subject=${subject}`
     );
 
     renderList("practicalList", data);
