@@ -231,7 +231,7 @@ function renderList(elementId, items) {
         container.innerHTML += `
             <div class="pdf-item">
                 ${item.title}<br>
-                <a href="${url}" target="_blank">
+                <a href="${url}?download=1" target="_blank" rel="noopener">
                     Download PDF
                 </a>
             </div>
