@@ -19,16 +19,15 @@ document.getElementById("loginForm").addEventListener("submit", async function(e
             localStorage.setItem("user", JSON.stringify(user)); // optional, only for frontend use
 
             if (user.role === "admin") {
-                window.location.href = "admin/admin-dashboard.html";
-            } else if (user.category && user.category.dashboard) {
-                window.location.href = user.category.dashboard.route;
-            } else {
-                alert("Dashboard not assigned to this user.");
-            }
-            console.log("User object:", user);
-console.log("Category:", user.category);
-console.log("Dashboard:", user.category?.dashboard);
-console.log("Route:", user.category?.dashboard?.route);
+    window.location.href = "admin/admin-dashboard.html";
+} else if (user.category?.dashboard?.route) {
+    window.location.href = user.category.dashboard.route;
+} else if (user.category) {
+    alert("Dashboard route not set for your category.");
+} else {
+    alert("Category or dashboard not assigned to this user.");
+}
+
 
         } else {
             alert(data.message || "Login failed");
