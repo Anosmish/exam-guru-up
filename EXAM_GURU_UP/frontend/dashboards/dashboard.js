@@ -1,176 +1,154 @@
-
-/* ================= AUTH CHECK ================= */
-
-
-if(!token){
-    window.location.href = "../login.html";
-}
+/* ================= GLOBAL ================= */
 
 let currentUser = null;
 
-/* ================= LOAD USER FROM DB ================= */
+/* ================= SAFE FETCH ================= */
 
-async function loadUser(){
+async function safeFetch(url, options = {}) {
+    try {
+        const res = await fetch(url, {
+            credentials: "include",
+            ...options
+        });
 
-    try{
-
-        const res = await fetch(
-            `${API_BASE_URL}/api/user/profile`,
-            {
-             credentials: "include"
-            }
-        );
+        if (res.status === 401) {
+            window.location.href = "../login.html";
+            return null;
+        }
 
         const data = await res.json();
 
-        if(data.user){
-
-            currentUser = data.user;
-
-            const name = data.user.name;
-            const category = data.user.category?.name || "Not Selected";
-            const subCategory = data.user.subCategory || "";
-
-            let displayText = category;
-
-            if(subCategory){
-                displayText += " - " + subCategory;
-            }
-
-            document.getElementById("username").innerText =
-            `Welcome, ${name} (${displayText})`;
-
+        if (!res.ok) {
+            console.error("API Error:", data.message);
+            return null;
         }
 
-    } catch(err){
+        return data;
 
-        document.getElementById("username").innerText =
-        "Welcome, Student";
-
+    } catch (err) {
+        console.error("Fetch Error:", err);
+        return null;
     }
-
 }
 
-/* ================= START DAILY QUIZ ================= */
+/* ================= LOAD USER ================= */
 
-document.getElementById("startQuizBtn")
-.addEventListener("click", ()=>{
+async function loadUser() {
 
-    if(!currentUser || !currentUser.category){
-        alert("Please select your course in profile first");
+    const data = await safeFetch(
+        `${API_BASE_URL}/api/user/profile`
+    );
+
+    if (!data?.user) {
+        window.location.href = "../login.html";
         return;
     }
 
-    window.location.href =
-    `../quiz.html?category=${currentUser.category._id}&subCategory=${currentUser.subCategory}`;
+    currentUser = data.user;
 
-});
+    const name = currentUser.name;
+    const category = currentUser.category?.name || "Not Selected";
+    const subCategory = currentUser.subCategory || "";
 
-/* ================= SUBJECT QUIZ ================= */
+    let displayText = category;
+    if (subCategory) displayText += " - " + subCategory;
 
-document.getElementById("startSubjectQuiz")
-.addEventListener("click", ()=>{
+    document.getElementById("username").innerText =
+        `Welcome, ${name} (${displayText})`;
+}
 
-    const subject =
-    document.getElementById("subjectSelect").value;
+/* ================= DAILY QUIZ ================= */
 
-    const difficulty =
-    document.getElementById("difficultySelect").value;
+function bindQuizButtons() {
 
-    if(!subject || !difficulty){
-        alert("Please select subject and difficulty");
-        return;
-    }
+    document.getElementById("startQuizBtn")
+        ?.addEventListener("click", () => {
 
-    if(!currentUser || !currentUser.category){
-        alert("Please select your course in profile first");
-        return;
-    }
+            if (!currentUser?.category?._id) {
+                alert("Please select your course in profile first");
+                return;
+            }
 
-    window.location.href =
-    `../quiz.html?category=${currentUser.category._id}&subCategory=${currentUser.subCategory}&subject=${subject}&difficulty=${difficulty}`;
+            window.location.href =
+                `../quiz.html?category=${currentUser.category._id}&subCategory=${currentUser.subCategory}`;
+        });
 
-});
+    document.getElementById("startSubjectQuiz")
+        ?.addEventListener("click", () => {
+
+            const subject =
+                document.getElementById("subjectSelect").value;
+
+            const difficulty =
+                document.getElementById("difficultySelect").value;
+
+            if (!subject || !difficulty) {
+                alert("Please select subject and difficulty");
+                return;
+            }
+
+            if (!currentUser?.category?._id) {
+                alert("Please select your course in profile first");
+                return;
+            }
+
+            window.location.href =
+                `../quiz.html?category=${currentUser.category._id}&subCategory=${currentUser.subCategory}&subject=${subject}&difficulty=${difficulty}`;
+        });
+}
+
+/* ================= LOAD SUBJECTS ================= */
+
+async function loadSubjects() {
+
+    if (!currentUser?.category?._id) return;
+
+    const subjects = await safeFetch(
+        `${API_BASE_URL}/api/quiz/subjects?category=${currentUser.category._id}&subCategory=${currentUser.subCategory}`
+    );
+
+    if (!subjects) return;
+
+    const subjectSelect =
+        document.getElementById("subjectSelect");
+
+    subjectSelect.innerHTML =
+        `<option value="">Select Subject</option>`;
+
+    subjects.forEach(sub => {
+        subjectSelect.innerHTML +=
+            `<option value="${sub}">${sub}</option>`;
+    });
+}
 
 /* ================= LOAD LATEST SCORE ================= */
 
-async function loadLatestScore(){
+async function loadLatestScore() {
 
-    try{
+    const data = await safeFetch(
+        `${API_BASE_URL}/api/score/latest`
+    );
 
-        const res = await fetch(
-        `${API_BASE_URL}/api/score/latest`,
-        {
-         credentials: "include"
-        });
+    const scoreElement =
+        document.getElementById("latestScore");
 
-        if(!res.ok){
-            throw new Error("Score not found");
-        }
-
-        const data = await res.json();
-
-        if(data.total === 0){
-            throw new Error("No attempts");
-        }
-
-        document.getElementById("latestScore").innerText =
-        `Score: ${data.score} | Questions: ${data.total}`;
-
-    }
-    catch(err){
-
-        document.getElementById("latestScore").innerText =
-        "No attempts yet";
-
-    }
-}
-
-
-/* ================= LOGOUT ================= */
-
-
-
-async function loadSubjects(){
-    
-
-    if(!currentUser || !currentUser.category){
+    if (!data || !data.total) {
+        scoreElement.innerText = "No attempts yet";
         return;
     }
 
-    try{
-
-        const res = await fetch(
-            `${API_BASE_URL}/api/quiz/subjects?category=${currentUser.category._id}&subCategory=${currentUser.subCategory}`
-        );
-
-        const subjects = await res.json();
-
-        const subjectSelect =
-        document.getElementById("subjectSelect");
-
-        subjectSelect.innerHTML =
-        `<option value="">Select Subject</option>`;
-
-        subjects.forEach(sub=>{
-            subjectSelect.innerHTML +=
-            `<option value="${sub}">${sub}</option>`;
-        });
-
-    }catch(err){
-        console.log("Subject load error");
-    }
+    scoreElement.innerText =
+        `Score: ${data.score} | Questions: ${data.total}`;
 }
-
 
 /* ================= INIT ================= */
-async function init(){
 
-    await loadUser();      // pehle user load hoga
-    await loadSubjects();  // phir subjects load honge
-    loadLatestScore();     // score load
+async function init() {
 
+    await loadUser();
+    bindQuizButtons();
+    await loadSubjects();
+    loadLatestScore();
 }
 
-
-init();
+document.addEventListener("DOMContentLoaded", init);

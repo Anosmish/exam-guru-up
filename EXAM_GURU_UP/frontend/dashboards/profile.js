@@ -1,7 +1,26 @@
+document.addEventListener("DOMContentLoaded", init);
 
-document.addEventListener("DOMContentLoaded", function () {
+let token = localStorage.getItem("token");
+const CATEGORY_API = `${API_BASE_URL}/api/categories`;
 
-    function goToDashboard() {
+if (!token) {
+    window.location.href = "../login.html";
+}
+
+let allCategories = [];
+
+/* ================= INIT ================= */
+
+function init() {
+    bindBackButton();
+    bindLogout();
+    loadCategories().then(loadProfile);
+}
+
+/* ================= BACK BUTTON ================= */
+
+function bindBackButton() {
+    document.getElementById("backBtn")?.addEventListener("click", () => {
 
         const user = JSON.parse(localStorage.getItem("user"));
 
@@ -15,168 +34,177 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        if (user.category && user.category.dashboard) {
+        if (user.category?.dashboard?.route) {
             window.location.href = user.category.dashboard.route;
         } else {
             alert("Dashboard not assigned.");
         }
-    }
-
-    document.getElementById("backBtn")
-        .addEventListener("click", goToDashboard);
-
-});
-const token = localStorage.getItem("token");
-const CATEGORY_API = `${API_BASE_URL}/api/categories`;
-if(!token){
-   window.location.href = "../login.html";
+    });
 }
 
-let allCategories = [];
+/* ================= LOGOUT ================= */
+
+function bindLogout() {
+    document.getElementById("logoutBtn")?.addEventListener("click", () => {
+        localStorage.clear();
+        window.location.href = "../index.html";
+    });
+}
+
+/* ================= SAFE FETCH ================= */
+
+async function safeFetch(url, options = {}) {
+    try {
+        const res = await fetch(url, {
+            headers: {
+                Authorization: "Bearer " + token,
+                ...(options.headers || {})
+            },
+            ...options
+        });
+
+        if (res.status === 401) {
+            window.location.href = "../login.html";
+            return null;
+        }
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            console.error("API Error:", data.message);
+            return null;
+        }
+
+        return data;
+
+    } catch (err) {
+        console.error("Fetch Error:", err);
+        alert("Server unreachable.");
+        return null;
+    }
+}
 
 /* ================= LOAD CATEGORIES ================= */
 
-async function loadCategories(){
+async function loadCategories() {
 
-    const res = await fetch(CATEGORY_API);
-    allCategories = await res.json();
+    const data = await safeFetch(CATEGORY_API);
+    if (!data) return;
+
+    allCategories = data;
 
     const catSelect = document.getElementById("editCategory");
     catSelect.innerHTML = '<option value="">Select Category</option>';
 
-    allCategories.forEach(cat=>{
+    allCategories.forEach(cat => {
         catSelect.innerHTML += `<option value="${cat._id}">${cat.name}</option>`;
+    });
+
+    catSelect.addEventListener("change", function () {
+        loadSubCategories(this.value);
     });
 }
 
 /* ================= LOAD SUB CATEGORY ================= */
 
-function loadSubCategories(categoryId){
+function loadSubCategories(categoryId) {
 
     const subSelect = document.getElementById("editSubCategory");
     subSelect.innerHTML = '<option value="">Select Sub Category</option>';
 
-    const selected = allCategories.find(c=>c._id === categoryId);
+    const selected = allCategories.find(c => c._id === categoryId);
 
-    if(selected){
-        selected.subCategories.forEach(sub=>{
-   const subName = typeof sub === "object" ? sub.name : sub;
+    if (!selected) return;
 
-   subSelect.innerHTML += `
-      <option value="${subName}">${subName}</option>
-   `;
-});
-
-    }
+    selected.subCategories.forEach(sub => {
+        const subName = typeof sub === "object" ? sub.name : sub;
+        subSelect.innerHTML += `<option value="${subName}">${subName}</option>`;
+    });
 }
-
-document.getElementById("editCategory")
-.addEventListener("change", function(){
-    loadSubCategories(this.value);
-});
 
 /* ================= LOAD PROFILE ================= */
 
-async function loadProfile(){
+async function loadProfile() {
 
-    const res = await fetch(`${API_BASE_URL}/api/user/profile`, {
-        headers:{ Authorization: "Bearer " + token }
-    });
+    const data = await safeFetch(`${API_BASE_URL}/api/user/profile`);
+    if (!data?.user) return;
 
-    const data = await res.json();
+    const user = data.user;
 
-    if(data.user){
+    document.getElementById("name").innerText = user.name;
+    document.getElementById("email").innerText = user.email;
+    document.getElementById("category").innerText =
+        user.category?.name || "Not Selected";
+    document.getElementById("subCategory").innerText =
+        user.subCategory || "Not Selected";
 
-        document.getElementById("name").innerText = data.user.name;
-        document.getElementById("email").innerText = data.user.email;
-        document.getElementById("category").innerText =
-            data.user.category?.name || "Not Selected";
-        document.getElementById("subCategory").innerText =
-            data.user.subCategory || "Not Selected";
+    document.getElementById("editName").value = user.name;
 
-        document.getElementById("editName").value = data.user.name;
-
-        if(data.user.category){
-            document.getElementById("editCategory").value =
-                data.user.category._id;
-            loadSubCategories(data.user.category._id);
-            document.getElementById("editSubCategory").value =
-                data.user.subCategory;
-        }
+    if (user.category?._id) {
+        document.getElementById("editCategory").value = user.category._id;
+        loadSubCategories(user.category._id);
+        document.getElementById("editSubCategory").value = user.subCategory;
     }
 }
 
 /* ================= UPDATE PROFILE ================= */
 
-async function updateProfile(){
+async function updateProfile() {
 
-    const name = editName.value;
-    const category = editCategory.value;
-    const subCategory = editSubCategory.value;
-    const msg = updateMsg;
+    const name = document.getElementById("editName").value;
+    const category = document.getElementById("editCategory").value;
+    const subCategory = document.getElementById("editSubCategory").value;
+    const msg = document.getElementById("updateMsg");
 
-    if(!name || !category || !subCategory){
-        msg.innerText="Please fill all fields";
-        msg.className="msg error";
-        return;
-    }
-
-    msg.innerText="Updating...";
-    msg.className="msg loading";
-
-    const res = await fetch(
-        `${API_BASE_URL}/api/user/update`,
-        {
-            method:"PUT",
-            headers:{
-                "Content-Type":"application/json",
-                Authorization: "Bearer " + token
-
-            },
-            body: JSON.stringify({
-                name,
-                category,
-                subCategory
-            })
-        }
-    );
-
-    const data = await res.json();
-
-    if(res.ok){
-        msg.innerText="Profile updated successfully";
-        msg.className="msg success";
-        loadProfile();
-    }else{
-        msg.innerText=data.message;
-        msg.className="msg error";
-    }
-}
-
-document.getElementById("logoutBtn")
-.addEventListener("click", ()=>{
-
-    localStorage.clear();
-    window.location.href="../index.html";
-
-});
-
-/* ================= CHANGE PASSWORD ================= */
-
-async function changePassword(){
-
-    const oldPassword = document.getElementById("oldPassword").value;
-    const newPassword = document.getElementById("newPassword").value;
-    const confirmPassword = document.getElementById("confirmPassword").value;
-    const msg = document.getElementById("passMsg");
-
-    if(!oldPassword || !newPassword || !confirmPassword){
+    if (!name || !category || !subCategory) {
         msg.innerText = "Please fill all fields";
         msg.className = "msg error";
         return;
     }
 
-    if(newPassword !== confirmPassword){
+    msg.innerText = "Updating...";
+    msg.className = "msg loading";
+
+    const data = await safeFetch(
+        `${API_BASE_URL}/api/user/update`,
+        {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, category, subCategory })
+        }
+    );
+
+    if (!data) {
+        msg.innerText = "Update failed";
+        msg.className = "msg error";
+        return;
+    }
+
+    msg.innerText = "Profile updated successfully";
+    msg.className = "msg success";
+    loadProfile();
+}
+
+/* ================= CHANGE PASSWORD ================= */
+
+async function changePassword() {
+
+    const oldPasswordInput = document.getElementById("oldPassword");
+    const newPasswordInput = document.getElementById("newPassword");
+    const confirmPasswordInput = document.getElementById("confirmPassword");
+    const msg = document.getElementById("passMsg");
+
+    const oldPassword = oldPasswordInput.value;
+    const newPassword = newPasswordInput.value;
+    const confirmPassword = confirmPasswordInput.value;
+
+    if (!oldPassword || !newPassword || !confirmPassword) {
+        msg.innerText = "Please fill all fields";
+        msg.className = "msg error";
+        return;
+    }
+
+    if (newPassword !== confirmPassword) {
         msg.innerText = "Passwords do not match";
         msg.className = "msg error";
         return;
@@ -185,41 +213,25 @@ async function changePassword(){
     msg.innerText = "Updating...";
     msg.className = "msg loading";
 
-    const res = await fetch(
+    const data = await safeFetch(
         `${API_BASE_URL}/api/user/change-password`,
         {
             method: "PUT",
-            headers:{
-                "Content-Type":"application/json",
-                Authorization: "Bearer " + token
-
-            },
-            body: JSON.stringify({
-                oldPassword,
-                newPassword
-            })
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ oldPassword, newPassword })
         }
     );
 
-    const data = await res.json();
-
-    if(res.ok){
-        msg.innerText = "Password changed successfully";
-        msg.className = "msg success";
-
-        oldPassword.value = "";
-        newPassword.value = "";
-        confirmPassword.value = "";
-    }
-    else{
-        msg.innerText = data.message;
+    if (!data) {
+        msg.innerText = "Password change failed";
         msg.className = "msg error";
+        return;
     }
+
+    msg.innerText = "Password changed successfully";
+    msg.className = "msg success";
+
+    oldPasswordInput.value = "";
+    newPasswordInput.value = "";
+    confirmPasswordInput.value = "";
 }
-
-
-
-/* ================= INIT ================= */
-
-loadCategories().then(loadProfile);
-
