@@ -25,6 +25,11 @@ document.getElementById("loginForm").addEventListener("submit", async function(e
             } else {
                 alert("Dashboard not assigned to this user.");
             }
+            console.log("User object:", user);
+console.log("Category:", user.category);
+console.log("Dashboard:", user.category?.dashboard);
+console.log("Route:", user.category?.dashboard?.route);
+
         } else {
             alert(data.message || "Login failed");
         }
