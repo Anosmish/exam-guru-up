@@ -1,17 +1,10 @@
 let questions = [];
 let currentIndex = 0;
-
 let userAnswers = [];
 let answered = false;
 
 let timerInterval;
 let timeLeft = 30;
-
-const token = localStorage.getItem("token");
-
-if (!token) {
-    window.location.href = "login.html";
-}
 
 const urlParams = new URLSearchParams(window.location.search);
 const category = urlParams.get("category");
@@ -20,56 +13,70 @@ const subject = urlParams.get("subject") || "";
 const difficulty = urlParams.get("difficulty") || "";
 const quizType = urlParams.get("type") || "practice";
 
-// ================= LOAD QUIZ =================
+// ================= SAFE FETCH =================
 
-async function loadQuiz() {
-
+async function safeFetch(url, options = {}) {
     try {
+        const res = await fetch(url, {
+            credentials: "include",   // 🔥 COOKIE IMPORTANT
+            ...options
+        });
 
-        const limit = quizType === "daily" ? 10 : 50;
-
-        const res = await fetch(
-          `${API_BASE_URL}/api/quiz/generate?category=${category}&subCategory=${subCategory}&subject=${subject}&difficulty=${difficulty}&limit=${limit}`
-        );
-
-        if (!res.ok) {
-            throw new Error(`Server Error: ${res.status}`);
+        if (res.status === 401) {
+            window.location.href = "login.html";
+            return null;
         }
 
         const data = await res.json();
 
-        if (!data.success || !data.questions || data.questions.length === 0) {
-            document.querySelector(".quiz-container").innerHTML =
-                "<h3>No questions found.</h3>";
-            return;
+        if (!res.ok) {
+            console.error("API Error:", data.message);
+            return null;
         }
 
-        questions = data.questions;
+        return data;
 
-        showQuestion();
-
-    } catch (error) {
-        console.error("Quiz Load Error:", error);
-        document.querySelector(".quiz-container").innerHTML =
-            "<h3>Error loading quiz.</h3>";
+    } catch (err) {
+        console.error("Fetch Error:", err);
+        return null;
     }
 }
 
-function goToDashboard(){
+// ================= LOAD QUIZ =================
 
-    const user = JSON.parse(localStorage.getItem("user"));
+async function loadQuiz() {
 
-    if(!user){
-        window.location.href = "../login.html";
+    const limit = quizType === "daily" ? 10 : 50;
+
+    const data = await safeFetch(
+        `${API_BASE_URL}/api/quiz/generate?category=${category}&subCategory=${subCategory}&subject=${subject}&difficulty=${difficulty}&limit=${limit}`
+    );
+
+    if (!data || !data.questions || data.questions.length === 0) {
+        document.querySelector(".quiz-container").innerHTML =
+            "<h3>No questions found.</h3>";
         return;
     }
 
-    if(user.role === "admin"){
+    questions = data.questions;
+    showQuestion();
+}
+
+// ================= DASHBOARD REDIRECT =================
+
+async function goToDashboard() {
+
+    const data = await safeFetch(`${API_BASE_URL}/api/user/profile`);
+    if (!data?.user) return;
+
+    const user = data.user;
+
+    if (user.role === "admin") {
         window.location.href = "../admin/admin-dashboard.html";
         return;
     }
 
-    if(user.category && user.category.dashboard){
+    if (user.category?.dashboard?.route) {
         window.location.href = user.category.dashboard.route;
     } else {
         alert("Dashboard not assigned.");
@@ -79,13 +86,6 @@ function goToDashboard(){
 // ================= TIMER =================
 
 function startTimer() {
-    console.log("Params:",
-   category,
-   subCategory,
-   subject,
-   difficulty
-);
-
 
     timeLeft = 30;
     document.getElementById("progress").innerText = `Time Left: ${timeLeft}s`;
@@ -101,12 +101,9 @@ function startTimer() {
 
             const currentQuestion = questions[currentIndex];
 
-            // Save unanswered
             userAnswers.push({
-                question: currentQuestion.question,
-                selectedAnswer: "Not Answered",
-                correctAnswer: currentQuestion.correctAnswer,
-                options: currentQuestion.options
+                questionId: currentQuestion._id,
+                selectedAnswer: "Not Answered"
             });
 
             currentIndex++;
@@ -131,14 +128,12 @@ function showQuestion() {
     }
 
     answered = false;
-
     clearInterval(timerInterval);
     startTimer();
 
     const q = questions[currentIndex];
 
     document.getElementById("question").innerText = q.question || "";
-
     document.getElementById("A").innerText = q.options?.A || "";
     document.getElementById("B").innerText = q.options?.B || "";
     document.getElementById("C").innerText = q.options?.C || "";
@@ -155,15 +150,11 @@ function checkAnswer(selected) {
     clearInterval(timerInterval);
 
     const currentQuestion = questions[currentIndex];
-   
 
     userAnswers.push({
-      questionId: currentQuestion._id,
-      selectedAnswer: selected
-   });
-
-    // ✅ Difficulty Based Scoring
-    
+        questionId: currentQuestion._id,
+        selectedAnswer: selected
+    });
 
     currentIndex++;
 
@@ -178,45 +169,41 @@ function checkAnswer(selected) {
 
 async function finishQuiz() {
 
-   clearInterval(timerInterval);
+    clearInterval(timerInterval);
 
-   try {
-
-      const res = await fetch(
-         `${API_BASE_URL}/api/score/submit`,
-         {
+    const data = await safeFetch(
+        `${API_BASE_URL}/api/score/submit`,
+        {
             method: "POST",
             headers: {
-               "Content-Type": "application/json",
-               "Authorization": "Bearer " + token
+                "Content-Type": "application/json"
             },
             body: JSON.stringify({
-               answers: userAnswers,
-               quizType: quizType
+                answers: userAnswers,
+                quizType: quizType
             })
-         }
-      );
+        }
+    );
 
-      const result = await res.json();
+    if (!data) {
+        alert("Error submitting quiz");
+        return;
+    }
 
-      localStorage.setItem("resultData", JSON.stringify(result));
-
-      window.location.href = "result.html";
-
-   } catch (error) {
-      console.error("Submit Error:", error);
-   }
+    sessionStorage.setItem("resultData", JSON.stringify(data));
+    window.location.href = "result.html";
 }
 
-// Attach option click events after DOM loads
-document.addEventListener("DOMContentLoaded", function(){
+// ================= INIT =================
+
+document.addEventListener("DOMContentLoaded", () => {
 
     document.getElementById("A").addEventListener("click", () => checkAnswer("A"));
     document.getElementById("B").addEventListener("click", () => checkAnswer("B"));
     document.getElementById("C").addEventListener("click", () => checkAnswer("C"));
     document.getElementById("D").addEventListener("click", () => checkAnswer("D"));
 
-});
-// ================= START =================
+    document.getElementById("backBtn")?.addEventListener("click", goToDashboard);
 
-loadQuiz();
+    loadQuiz();
+});
