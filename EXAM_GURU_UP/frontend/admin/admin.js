@@ -138,14 +138,22 @@ async function loadUsers() {
 }
 
 async function deleteUser(id) {
+    if (!confirm("Are you sure you want to delete this user?")) return;
 
-
-    await fetch(
+    const res = await fetch(
         `${API_BASE_URL}/api/admin/delete-user/${id}`,
-        { credentials: "include" }
+        {
+            method: "DELETE",
+            credentials: "include"
+        }
     );
 
-    loadUsers();
+    if (res.ok) {
+        alert("User deleted ✅");
+        loadUsers();
+    } else {
+        alert("Delete failed ❌");
+    }
 }
 
 /* ======================================================
