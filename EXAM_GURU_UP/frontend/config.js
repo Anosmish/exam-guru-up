@@ -1,4 +1,4 @@
 const API_BASE_URL =
   window.location.hostname === "localhost"
     ? "http://localhost:5000"
-    : "https://prepzenith.onrender.com";
+    : "https://exam-guru-up.onrender.com";
