@@ -214,7 +214,6 @@ router.get("/verify/:token", async (req, res) => {
         </form>
     `);
 });
-
 router.post("/verify/:token", async (req, res) => {
     try {
         const tempUser = await TempUser.findOne({
@@ -223,7 +222,14 @@ router.post("/verify/:token", async (req, res) => {
         });
 
         if (!tempUser) {
-            return res.send("Verification link expired or invalid.");
+            return res.status(400).send("Verification link expired or invalid.");
+        }
+
+        // Prevent duplicate user creation (extra safety)
+        const existingUser = await User.findOne({ email: tempUser.email });
+        if (existingUser) {
+            await TempUser.deleteOne({ _id: tempUser._id });
+            return res.redirect(process.env.FRONTEND_URL);
         }
 
         const newUser = await User.create({
@@ -236,32 +242,30 @@ router.post("/verify/:token", async (req, res) => {
             role: "user"
         });
 
+        // Delete temp user after successful creation
         await TempUser.deleteOne({ _id: tempUser._id });
 
-        const token = jwt.sign(
+        // Generate JWT
+        const authToken = jwt.sign(
             { id: newUser._id, role: newUser.role },
             process.env.JWT_SECRET,
             { expiresIn: "7d" }
         );
-        res.cookie("token", token, {
-  httpOnly: true,
-  secure: true,
-  sameSite: "none",
-  maxAge: 7 * 24 * 60 * 60 * 1000,
-});
 
-res.redirect(process.env.FRONTEND_URL);
+        // Set cookie
+        res.cookie("token", authToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "none",
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
 
-        res.send(`
-            <h2>Account Verified Successfully ✅</h2>
-                style="padding:10px 20px;background:#16a34a;color:white;border:none;border-radius:5px;">
-                Login Now
-            </button>
-        `);
+        // ✅ Only ONE response
+        return res.redirect(process.env.FRONTEND_URL);
 
     } catch (err) {
-        console.error(err);
-        res.send("Verification failed.");
+        console.error("Verification Error:", err);
+        return res.status(500).send("Verification failed.");
     }
 });
 
@@ -337,6 +341,17 @@ router.get("/me", verifyToken, async (req, res) => {
     }
 });
 
+
+/*LOGOUT*/
+
+router.post("/logout", (req, res) => {
+    res.clearCookie("token", {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "none",
+    });
+    res.json({ message: "Logged out successfully" });
+});
 /* =================================================
    🔹 FORGOT PASSWORD
 ================================================= */
@@ -399,7 +414,9 @@ PrepZenith Team
 
         await sendBrevoEmail(user.email, "Reset Password - PrepZenith", htmlContent, textContent);
 
-        res.json({ message: "Reset link sent to email" });
+       return res.json({
+            message: "If this email exists, a reset link has been sent."
+        });
 
     } catch (err) {
         console.error(err);

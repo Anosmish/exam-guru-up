@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded",async function () {
 
-await zcheckAdminAuth();
+await checkAdminAuth();
 
 async function checkAdminAuth() {
     try {
@@ -220,6 +220,9 @@ async function addQuestion() {
         `${API_BASE_URL}/api/admin/add-question`,
         {
             method: "POST",
+            headers: {
+   "Content-Type": "application/json"
+},
            credentials: "include",
             body: JSON.stringify({
                 question,
