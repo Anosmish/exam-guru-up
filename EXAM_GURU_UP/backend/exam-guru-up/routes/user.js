@@ -2,7 +2,7 @@ const express = require("express");
 const User = require("../models/User");
 const Score = require("../models/Score");
 const Category = require("../models/Category"); // ✅ IMPORTANT
-const verifyToken = require("../middleware/verifyToken");
+ const { verifyToken } = require("../middleware/authMiddleware");
 const bcrypt = require("bcryptjs");
 
 const router = express.Router();
