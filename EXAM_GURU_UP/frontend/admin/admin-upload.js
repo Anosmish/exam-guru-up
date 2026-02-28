@@ -1,8 +1,4 @@
 
-
-const token = localStorage.getItem("token");
-if(!token){ window.location.href="login.html"; }
-
 const typeSelect = document.getElementById("contentType");
 const categorySelect = document.getElementById("categorySelect");
 const subCategorySelect = document.getElementById("subCategorySelect");
@@ -14,10 +10,27 @@ const fileList = document.getElementById("fileList");
 let categoriesData = [];
 
 /* ================= LOAD CATEGORIES ================= */
+// Check session via backend
+async function checkAdminAuth() {
+    try {
+        const res = await fetch(`${API_BASE_URL}/api/auth/me`, {
+            credentials: "include"
+        });
+
+        if (!res.ok) {
+            window.location.href = "login.html";
+        }
+    } catch (err) {
+        window.location.href = "login.html";
+    }
+}
+
+checkAdminAuth();
+
 
 async function loadCategories(){
     const res = await fetch(`${API_BASE_URL}/api/admin/all-categories`,{
-        headers:{ Authorization:"Bearer "+token }
+    credentials: "include"
     });
 
     categoriesData = await res.json();
@@ -32,11 +45,14 @@ function adminLogout() {
 }
 
 document.getElementById("logoutBtn")
-.addEventListener("click", ()=>{
+.addEventListener("click", async ()=>{
 
-    localStorage.clear();
+    await fetch(`${API_BASE_URL}/api/auth/logout`,{
+        method:"POST",
+        credentials:"include"
+    });
+
     window.location.href="../index.html";
-
 });
 /* ================= LOAD SUBCATEGORIES ================= */
 
@@ -90,7 +106,7 @@ form.addEventListener("submit", async function(e){
 
     const res = await fetch(`${API_BASE_URL}/api/admin/upload-content`,{
         method:"POST",
-        headers:{ Authorization:"Bearer "+token },
+      credentials: "include",
         body:formData
     });
 
@@ -120,7 +136,7 @@ async function loadFiles(){
     const type = typeSelect.value;
 
     const res = await fetch(`${API_BASE_URL}/api/admin/list-content?type=${type}`,{
-        headers:{ Authorization:"Bearer "+token }
+      credentials: "include"
     });
 
     let data;
@@ -167,7 +183,7 @@ async function deleteFile(id,type){
 
     await fetch(`${API_BASE_URL}/api/admin/delete-content/${id}?type=${type}`,{
         method:"DELETE",
-        headers:{ Authorization:"Bearer "+token }
+     credentials: "include"
     });
 
     loadFiles();
