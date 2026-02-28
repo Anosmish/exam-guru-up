@@ -5,7 +5,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const http = require("http");
 const { Server } = require("socket.io");
-
+const cookieParser = require("cookie-parser");
 /* ================= APP CREATE FIRST ================= */
 
 const app = express();
@@ -54,7 +54,7 @@ app.use("/api/user", require("./routes/user"));
 app.use("/api/student", require("./routes/student"));
 app.use("/api/categories", require("./routes/category"));
 app.use("/api/dashboard", require("./routes/dashboard"));
-
+app.use(cookieParser());
 
 /* ================= DATABASE ================= */
 
