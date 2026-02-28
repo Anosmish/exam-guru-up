@@ -245,7 +245,7 @@ router.post("/verify/:token", async (req, res) => {
         );
         res.cookie("token", token, {
   httpOnly: true,
-  secure: false,
+  secure: true,
   sameSite: "lax",
   maxAge: 7 * 24 * 60 * 60 * 1000,
 });
@@ -273,11 +273,11 @@ router.post("/login", async (req, res) => {
     try {
         const { email, password } = req.body;
 
+        // Find user and populate dashboard
         const user = await User.findOne({ email })
             .populate({
                 path: "category",
                 model: "Category",
-           
                 populate: {
                     path: "dashboard",
                     model: "Dashboard"
@@ -289,22 +289,26 @@ router.post("/login", async (req, res) => {
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
 
+        // Generate JWT
         const token = jwt.sign(
             { id: user._id, role: user.role },
             process.env.JWT_SECRET,
             { expiresIn: "7d" }
         );
 
+        // Set cookie (HTTP-only, secure in production)
         res.cookie("token", token, {
-         httpOnly: true,
-        secure: false, // production me true karna
-         sameSite: "lax",
-         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production", // true in prod
+            sameSite: "lax",
+            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
         });
 
-        res.json({ user });
+        // Send user info in response
+        res.json({ user, message: "Login successful" });
+
     } catch (err) {
-        console.error("Login Error:", err); // <-- exact error console
+        console.error("Login Error:", err);
         res.status(500).json({ message: "Login failed", error: err.message });
     }
 });
