@@ -1,13 +1,28 @@
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded",async function () {
 
-    const token = localStorage.getItem("token");
-    const user = JSON.parse(localStorage.getItem("user"));
+await zcheckAdminAuth();
 
-    // 🔐 Admin Auth Check
-    if (!token || !user || user.role !== "admin") {
+async function checkAdminAuth() {
+    try {
+        const res = await fetch(`${API_BASE_URL}/api/auth/me`, {
+            credentials: "include"
+        });
+
+        if (!res.ok) {
+            window.location.href = "../login.html";
+            return;
+        }
+
+        const user = await res.json();
+
+        if (user.role !== "admin") {
+            window.location.href = "../login.html";
+        }
+
+    } catch (err) {
         window.location.href = "../login.html";
-        return;
     }
+}
 
     // ================= DASHBOARD =================
 
@@ -56,19 +71,17 @@ document.addEventListener("DOMContentLoaded", function () {
    LOGOUT
 ====================================================== */
 
-function adminLogout() {
-    localStorage.clear();
+async function adminLogout() {
+    await fetch(`${API_BASE_URL}/api/auth/logout`, {
+        method: "POST",
+        credentials: "include"
+    });
+
     window.location.href = "../index.html";
 }
 
 document.getElementById("logoutBtn")
-.addEventListener("click", ()=>{
-
-    localStorage.clear();
-    window.location.href="../index.html";
-
-});
-
+.addEventListener("click", adminLogout);
 /* ======================================================
    TOTAL USERS
 ====================================================== */
@@ -77,11 +90,11 @@ async function loadTotalUsers() {
 
     try {
 
-        const token = localStorage.getItem("token");
+
 
         const res = await fetch(
             `${API_BASE_URL}/api/admin/total-users`,
-            { headers: { "Authorization": "Bearer " + token }}
+            { credentials: "include"}
         );
 
         const data = await res.json();
@@ -102,11 +115,11 @@ async function loadTotalUsers() {
 
 async function loadUsers() {
 
-    const token = localStorage.getItem("token");
+
 
     const res = await fetch(
         `${API_BASE_URL}/api/admin/all-users`,
-        { headers: { "Authorization": "Bearer " + token } }
+        { credentials: "include" }
     );
 
     const data = await res.json();
@@ -126,11 +139,10 @@ async function loadUsers() {
 
 async function deleteUser(id) {
 
-    const token = localStorage.getItem("token");
 
     await fetch(
         `${API_BASE_URL}/api/admin/delete-user/${id}`,
-        { method: "DELETE", headers: { "Authorization": "Bearer " + token } }
+        { credentials: "include" }
     );
 
     loadUsers();
@@ -142,11 +154,11 @@ async function deleteUser(id) {
 
 async function loadQuestions() {
 
-    const token = localStorage.getItem("token");
+
 
     const res = await fetch(
         `${API_BASE_URL}/api/admin/all-questions`,
-        { headers: { "Authorization":"Bearer " +  token } }
+        { credentials: "include" }
     );
 
     const data = await res.json();
@@ -167,11 +179,11 @@ async function loadQuestions() {
 
 async function deleteQuestion(id) {
 
-    const token = localStorage.getItem("token");
+
 
     await fetch(
         `${API_BASE_URL}/api/admin/delete-question/${id}`,
-        { method: "DELETE", headers: { "Authorization": "Bearer " +  token } }
+        { method: "DELETE", credentials: "include"}
     );
 
     loadQuestions();
@@ -183,7 +195,7 @@ async function deleteQuestion(id) {
 
 async function addQuestion() {
 
-    const token = localStorage.getItem("token");
+
 
     const question = document.getElementById("question").value;
     const A = document.getElementById("A").value;
@@ -208,10 +220,7 @@ async function addQuestion() {
         `${API_BASE_URL}/api/admin/add-question`,
         {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Bearer " + token
-            },
+           credentials: "include",
             body: JSON.stringify({
                 question,
                 options: { A, B, C, D },
@@ -367,7 +376,7 @@ if (subCat) {
 
 async function uploadJSON() {
 
-    const token = localStorage.getItem("token");
+ 
     const fileInput = document.getElementById("jsonFile");
 
     if (!fileInput.files.length) {
@@ -382,7 +391,7 @@ async function uploadJSON() {
         `${API_BASE_URL}/api/admin/upload-json`,
         {
             method: "POST",
-            headers: { "Authorization": "Bearer " + token },
+           credentials: "include",
             body: formData
         }
     );
@@ -430,9 +439,10 @@ async function createDashboard() {
 
     const res = await fetch(`${API_BASE_URL}/api/dashboard/add`, {
         method: "POST",
+        credentials: "include",
         headers: {
             "Content-Type": "application/json",
-            "Authorization": "Bearer " + token
+         
         },
         body: JSON.stringify({ name, route, description })
     });
@@ -458,13 +468,13 @@ function clearForm() {
 
 async function loadDashboards() {
 
-    const token = localStorage.getItem("token");
+
 
     const container = document.getElementById("dashboardList");
     if (!container) return;
 
     const res = await fetch(`${API_BASE_URL}/api/dashboard`, {
-        headers: { "Authorization": "Bearer " + token }
+        credentials: "include"
     });
 
     const data = await res.json();
@@ -532,13 +542,11 @@ async function deleteDashboard(id) {
     if (!confirm("Are you sure you want to delete this dashboard?"))
         return;
 
-    const token = localStorage.getItem("token");
+
 
     await fetch(`${API_BASE_URL}/api/dashboard/${id}`, {
         method: "DELETE",
-        headers: {
-            "Authorization": "Bearer " + token
-        }
+        credentials: "include"
     });
 
     loadDashboards();
@@ -561,13 +569,14 @@ function editDashboard(id, name, route, description) {
 
 async function updateDashboard(id, name, route, description) {
 
-    const token = localStorage.getItem("token");
+
 
     await fetch(`${API_BASE_URL}/api/dashboard/${id}`, {
         method: "PUT",
+        credentials: "include",
         headers: {
             "Content-Type": "application/json",
-            "Authorization": "Bearer " + token
+     
         },
         body: JSON.stringify({ name, route, description })
     });
