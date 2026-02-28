@@ -1,21 +1,26 @@
 /* ================= GLOBAL ================= */
 
 let user = null;
-let token = null;
 
-document.addEventListener("DOMContentLoaded", init);
 
 /* ================= INIT ================= */
 
-function init() {
-    try {
-        user = JSON.parse(localStorage.getItem("user"));
-        token = localStorage.getItem("token");
+document.addEventListener("DOMContentLoaded", init);
 
-        if (!user || !token) {
+async function init() {
+    try {
+
+        // Check session from backend
+        const res = await fetch(`${API_BASE_URL}/api/auth/me`, {
+            credentials: "include"
+        });
+
+        if (!res.ok) {
             window.location.href = "../login.html";
             return;
         }
+
+        user = await res.json();
 
         document.getElementById("welcomeUser").innerText =
             "Welcome, " + user.name;
@@ -28,8 +33,6 @@ function init() {
 
     } catch (err) {
         console.error("Init Error:", err);
-        alert("Something went wrong. Please login again.");
-        localStorage.clear();
         window.location.href = "../login.html";
     }
 }
@@ -102,10 +105,20 @@ function initModalSystem() {
 async function safeFetch(url) {
     try {
         const res = await fetch(url, {
-            headers: { Authorization: "Bearer " + token }
+            credentials: "include"
         });
 
-        if (!res.ok) throw new Error(res.status);
+        // 🔐 Session expired
+        if (res.status === 401) {
+            window.location.href = "../login.html";
+            return null;
+        }
+
+        // ❌ Other API errors
+        if (!res.ok) {
+            console.error("API Error:", res.status);
+            return null;
+        }
 
         return await res.json();
 
