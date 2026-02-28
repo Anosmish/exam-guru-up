@@ -1,7 +1,6 @@
 
 /* ================= AUTH CHECK ================= */
 
-const token = localStorage.getItem("token");
 
 if(!token){
     window.location.href = "../login.html";
@@ -18,7 +17,7 @@ async function loadUser(){
         const res = await fetch(
             `${API_BASE_URL}/api/user/profile`,
             {
-                headers:{ Authorization: "Bearer " + token }
+             credentials: "include"
             }
         );
 
@@ -102,7 +101,7 @@ async function loadLatestScore(){
         const res = await fetch(
         `${API_BASE_URL}/api/score/latest`,
         {
-            headers:{ Authorization: "Bearer " + token }
+         credentials: "include"
         });
 
         if(!res.ok){
