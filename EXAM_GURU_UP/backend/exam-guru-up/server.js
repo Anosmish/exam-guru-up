@@ -34,7 +34,7 @@ app.use(cors({
 
 
 app.use(express.json());
-
+app.use(cookieParser());
 /* ================= SOCKET.IO ================= */
 
 const io = new Server(server, {
@@ -54,7 +54,7 @@ app.use("/api/user", require("./routes/user"));
 app.use("/api/student", require("./routes/student"));
 app.use("/api/categories", require("./routes/category"));
 app.use("/api/dashboard", require("./routes/dashboard"));
-app.use(cookieParser());
+
 
 /* ================= DATABASE ================= */
 
