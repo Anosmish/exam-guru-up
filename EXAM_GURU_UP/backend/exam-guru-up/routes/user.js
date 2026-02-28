@@ -14,9 +14,14 @@ router.get("/profile", verifyToken, async (req, res) => {
 
         const userId = req.user.id;
 
-        const user = await User.findById(userId)
-            .populate("category")   // 🔥 VERY IMPORTANT
-            .select("-password");
+  const user = await User.findById(userId)
+    .populate({
+        path: "category",
+        populate: {
+            path: "dashboard"
+        }
+    })
+    .select("-password");
 
         if (!user) {
             return res.status(404).json({ message: "User not found" });
@@ -95,7 +100,12 @@ if (!isValidSubCategory) {
             },
             { new: true }
         )
-        .populate("category")   // 🔥 Important
+        .populate({
+    path: "category",
+    populate: {
+        path: "dashboard"
+    }
+})  // 🔥 Important
         .select("-password");
 
         res.json({
