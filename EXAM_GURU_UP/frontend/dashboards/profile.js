@@ -1,65 +1,14 @@
 document.addEventListener("DOMContentLoaded", init);
 
-let token = localStorage.getItem("token");
 const CATEGORY_API = `${API_BASE_URL}/api/categories`;
-
-if (!token) {
-    window.location.href = "../login.html";
-}
-
 let allCategories = [];
-
-/* ================= INIT ================= */
-
-function init() {
-    bindBackButton();
-    bindLogout();
-    loadCategories().then(loadProfile);
-}
-
-/* ================= BACK BUTTON ================= */
-
-function bindBackButton() {
-    document.getElementById("backBtn")?.addEventListener("click", () => {
-
-        const user = JSON.parse(localStorage.getItem("user"));
-
-        if (!user) {
-            window.location.href = "../login.html";
-            return;
-        }
-
-        if (user.role === "admin") {
-            window.location.href = "../admin/admin-dashboard.html";
-            return;
-        }
-
-        if (user.category?.dashboard?.route) {
-            window.location.href = user.category.dashboard.route;
-        } else {
-            alert("Dashboard not assigned.");
-        }
-    });
-}
-
-/* ================= LOGOUT ================= */
-
-function bindLogout() {
-    document.getElementById("logoutBtn")?.addEventListener("click", () => {
-        localStorage.clear();
-        window.location.href = "../index.html";
-    });
-}
 
 /* ================= SAFE FETCH ================= */
 
 async function safeFetch(url, options = {}) {
     try {
         const res = await fetch(url, {
-            headers: {
-                Authorization: "Bearer " + token,
-                ...(options.headers || {})
-            },
+            credentials: "include",
             ...options
         });
 
@@ -84,41 +33,52 @@ async function safeFetch(url, options = {}) {
     }
 }
 
-/* ================= LOAD CATEGORIES ================= */
+/* ================= INIT ================= */
 
-async function loadCategories() {
+async function init() {
+    bindBackButton();
+    bindLogout();
 
-    const data = await safeFetch(CATEGORY_API);
-    if (!data) return;
+    const userLoaded = await loadProfile();
+    if (!userLoaded) return;
 
-    allCategories = data;
+    await loadCategories();
+}
 
-    const catSelect = document.getElementById("editCategory");
-    catSelect.innerHTML = '<option value="">Select Category</option>';
+/* ================= BACK BUTTON ================= */
 
-    allCategories.forEach(cat => {
-        catSelect.innerHTML += `<option value="${cat._id}">${cat.name}</option>`;
-    });
+function bindBackButton() {
+    document.getElementById("backBtn")?.addEventListener("click", async () => {
 
-    catSelect.addEventListener("change", function () {
-        loadSubCategories(this.value);
+        const data = await safeFetch(`${API_BASE_URL}/api/user/profile`);
+        if (!data?.user) return;
+
+        const user = data.user;
+
+        if (user.role === "admin") {
+            window.location.href = "../admin/admin-dashboard.html";
+            return;
+        }
+
+        if (user.category?.dashboard?.route) {
+            window.location.href = user.category.dashboard.route;
+        } else {
+            alert("Dashboard not assigned.");
+        }
     });
 }
 
-/* ================= LOAD SUB CATEGORY ================= */
+/* ================= LOGOUT ================= */
 
-function loadSubCategories(categoryId) {
+function bindLogout() {
+    document.getElementById("logoutBtn")?.addEventListener("click", async () => {
 
-    const subSelect = document.getElementById("editSubCategory");
-    subSelect.innerHTML = '<option value="">Select Sub Category</option>';
+        await fetch(`${API_BASE_URL}/api/auth/logout`, {
+            method: "POST",
+            credentials: "include"
+        });
 
-    const selected = allCategories.find(c => c._id === categoryId);
-
-    if (!selected) return;
-
-    selected.subCategories.forEach(sub => {
-        const subName = typeof sub === "object" ? sub.name : sub;
-        subSelect.innerHTML += `<option value="${subName}">${subName}</option>`;
+        window.location.href = "../index.html";
     });
 }
 
@@ -127,7 +87,7 @@ function loadSubCategories(categoryId) {
 async function loadProfile() {
 
     const data = await safeFetch(`${API_BASE_URL}/api/user/profile`);
-    if (!data?.user) return;
+    if (!data?.user) return false;
 
     const user = data.user;
 
@@ -140,11 +100,55 @@ async function loadProfile() {
 
     document.getElementById("editName").value = user.name;
 
-    if (user.category?._id) {
-        document.getElementById("editCategory").value = user.category._id;
-        loadSubCategories(user.category._id);
-        document.getElementById("editSubCategory").value = user.subCategory;
-    }
+    return true;
+}
+
+/* ================= LOAD CATEGORIES ================= */
+
+async function loadCategories() {
+
+    const data = await safeFetch(CATEGORY_API);
+    if (!data) return;
+
+    allCategories = data;
+
+    const catSelect = document.getElementById("editCategory");
+    const subSelect = document.getElementById("editSubCategory");
+
+    catSelect.innerHTML = '<option value="">Select Category</option>';
+    subSelect.innerHTML = '<option value="">Select Sub Category</option>';
+
+    allCategories.forEach(cat => {
+        catSelect.innerHTML += `<option value="${cat._id}">${cat.name}</option>`;
+    });
+
+    catSelect.addEventListener("change", function () {
+        loadSubCategories(this.value);
+    });
+
+    // Pre-select current user category
+    const profile = await safeFetch(`${API_BASE_URL}/api/user/profile`);
+    if (!profile?.user?.category?._id) return;
+
+    catSelect.value = profile.user.category._id;
+    loadSubCategories(profile.user.category._id);
+    subSelect.value = profile.user.subCategory;
+}
+
+/* ================= LOAD SUB CATEGORY ================= */
+
+function loadSubCategories(categoryId) {
+
+    const subSelect = document.getElementById("editSubCategory");
+    subSelect.innerHTML = '<option value="">Select Sub Category</option>';
+
+    const selected = allCategories.find(c => c._id === categoryId);
+    if (!selected) return;
+
+    selected.subCategories.forEach(sub => {
+        const subName = typeof sub === "object" ? sub.name : sub;
+        subSelect.innerHTML += `<option value="${subName}">${subName}</option>`;
+    });
 }
 
 /* ================= UPDATE PROFILE ================= */
