@@ -16,8 +16,8 @@ const server = http.createServer(app);
 const allowedOrigins = [
   "https://prepzenith.netlify.app",
   "http://localhost:5500",
-  "https://exam-guru-up.onrender.com"
-   "http://localhost:3001"
+  "https://exam-guru-up.onrender.com",
+   "http://localhost:3001",
    "http://localhost:3000"
 ];
 
