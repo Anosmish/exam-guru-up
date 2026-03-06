@@ -18,7 +18,8 @@ const allowedOrigins = [
   "http://localhost:5500",
   "https://exam-guru-up.onrender.com",
    "http://localhost:3001",
-   "http://localhost:3000"
+   "http://localhost:3000",
+  "https://prepzenith-platform-32su163ej-anosmishs-projects.vercel.app"
 ];
 
 app.use(cors({
