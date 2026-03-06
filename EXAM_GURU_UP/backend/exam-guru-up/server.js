@@ -46,8 +46,7 @@ app.use(cors({
   allowedHeaders: ["Content-Type", "Authorization"],
 }));
 
-// Handle preflight OPTIONS requests for all routes
-app.options("/(.*)", cors());
+
 
 /* ================= MIDDLEWARE ================= */
 
